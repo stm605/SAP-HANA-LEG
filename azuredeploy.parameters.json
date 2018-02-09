@@ -1,0 +1,57 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "addressPrefixes": {
+      "value": "10.0.0.0/16"
+    },
+    "customURI": {
+      "value": "https://smlama.blob.core.windows.net/smlamastaging"
+    },
+    "ExistingNetworkResourceGroup": {
+      "value": "no"
+    },
+    "HANAJumpbox": {
+      "value": "yes"
+    },
+    "HANANumber": {
+      "value": "00"
+    },
+    "HANASID": {
+      "value": "H10"
+    },
+    "HANASubnetName": {
+      "value": "SAPDataSubnet"
+    },
+    "HANASubnetPrefix": {
+      "value": "10.0.5.0/24"
+    },
+    "IPAllocationMethod": {
+      "value": "Static"
+    },
+    "ManagementSubnetName": {
+      "value": "SAPMgmtSubnet"
+    },
+    "ManagementSubnetPrefix": {
+      "value": "10.0.6.0/24"
+    },
+    "NetworkName": {
+      "value": "ra-sap-hana-vnet"
+    },
+    "OperatingSystem": {
+      "value": "SLES for SAP 12 SP3"
+    },
+    "VMName": {
+      "value": "testVm"
+    },
+    "VMPassword": {
+      "value": "qwe123QWE!@#"
+    },
+    "VMSize": {
+      "value": "Standard_E16s_v3 (128 GB - AppServer)"
+    },
+    "VMUserName": {
+      "value": "testuser"
+    }
+  }
+}
