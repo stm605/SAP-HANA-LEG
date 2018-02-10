@@ -12,6 +12,7 @@ sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
 sudo zypper install -y sapconf
 sudo zypper install -y saptune
+sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /sapmnt
 sudu mkdir /usr/sap
 
@@ -43,13 +44,11 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 
 echo "logicalvols start" >> /tmp/parameter.txt
-  sapmntvglun="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"  
-  usrsapvglun="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"  
+  sapmntvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"  
   pvcreate sapmntvglun 
-  pvcreate usrsapvglun 
-  vgcreate sapmntvg sapmntvglun usrsapvglun
-  lvcreate -l 80%FREE -n usrsaplv sapmntvg
-  lvcreate -l 80%FREE -n sapmntlv sapmntvg
+  vgcreate sapmntvg sapmntvglun
+  lvcreate -l 50%FREE -n usrsaplv sapmntvg
+  lvcreate -l 50%FREE -n sapmntlv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
   mkfs.xfs /dev/sapmntvg/usrsaplv
 echo "logicalvols end" >> /tmp/parameter.txt
