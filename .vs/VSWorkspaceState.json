@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
+    "\\scripts",
     "\\vms"
   ],
-  "SelectedNode": "\\vms\\appserver.json",
+  "SelectedNode": "\\scripts\\small.sh",
   "PreviewInSolutionExplorer": false
 }
