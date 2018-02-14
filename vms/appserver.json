@@ -206,6 +206,30 @@
         "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-shared'))]"
       ]
+      ,
+      "resources": [
+        {
+          "type": "extensions",
+          "name": "scriptextension",
+          "apiVersion": "[variables('api-version-vm')]",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "CustomScript",
+            "typeHandlerVersion": "2.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
+              ],
+              "commandToExecute": "[concat('sh appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {

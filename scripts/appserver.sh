@@ -41,10 +41,9 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
-number="$(lsscsi [*] 0 0 4| cut -c2)"
 
 echo "logicalvols start" >> /tmp/parameter.txt
-  sapmntvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"  
+  sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
   pvcreate sapmntvglun 
   vgcreate sapmntvg sapmntvglun
   lvcreate -l 50%FREE -n usrsaplv sapmntvg
