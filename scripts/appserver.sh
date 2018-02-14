@@ -54,10 +54,10 @@ echo "logicalvols end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sapmntvg/sapmntlv
-mount -t xfs /dev/sapmntvg/usrsaplv
+mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
+mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap
 echo "mounthanashared end" >> /tmp/parameter.txt
 echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/sapmntvg/sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
-echo "/dev/sapmntvg/usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
