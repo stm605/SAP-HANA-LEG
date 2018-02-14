@@ -61,10 +61,3 @@ echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/sapmntvg/sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
 echo "/dev/sapmntvg/usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
-
-if [ ! -d "/hana/data/sapbits" ]
- then
- mkdir "/hana/data/sapbits"
-fi
-
-shutdown -r 1
