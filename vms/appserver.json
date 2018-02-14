@@ -93,7 +93,10 @@
       "defaultValue": "10.0.5.5"
     },
     "AppServerDataDiskSize": {
-      "type": "int"
+      "type": "int",
+      "metadata": {
+        "description": "Data disk size for the App Server"
+      }
     }
   },
   "variables": {
@@ -209,5 +212,3 @@
 
   }
 }
- 
- 

@@ -4,7 +4,7 @@
   "parameters": {
     "addressPrefixes": {
       "type": "string",
-      "defaultValue": "10.0.0.0/16",
+      "defaultValue": "10.1.0.0/16",
       "metadata": {
         "description": "The HANA VNET prefix"
       }
@@ -14,11 +14,11 @@
       "metadata": {
         "description": "Size of the Data Disk for the App Server"
       },
-      "defaultValue": "512",
+      "defaultValue": "511",
       "allowedValues": [
         "512",
-        "1024",
-        "2048"
+        "1023",
+        "2047"
       ]
     },
     "customURI": {
@@ -67,7 +67,7 @@
     },
     "HANASubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.0.5.0/24",
+      "defaultValue": "10.1.5.0/24",
       "metadata": {
         "description": "The data subnet prefix"
       }
@@ -92,7 +92,7 @@
     },
     "ManagementSubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.0.6.0/24",
+      "defaultValue": "10.1.6.0/24",
       "metadata": {
         "description": "The management subnet prefix"
       }
@@ -132,14 +132,14 @@
       "metadata": {
         "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
       },
-      "defaultValue": "10.0.5.4"
+      "defaultValue": "10.1.5.4"
     },
     "SecondaryStaticIP": {
       "type": "string",
       "metadata": {
         "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
       },
-      "defaultValue": "10.0.5.5"
+      "defaultValue": "10.1.5.5"
     },
     "VMName": {
       "type": "string",
