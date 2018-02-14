@@ -14,7 +14,7 @@ sudo zypper install -y sapconf
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /sapmnt
-sudu mkdir /usr/sap
+sudo mkdir /usr/sap
 
 
 # Install .NET Core and AzCopy
@@ -47,7 +47,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   pvcreate sapmntvg $sapmntvglun 
   vgcreate sapmntvg $sapmntvglun
   lvcreate -l 50%FREE -n usrsaplv sapmntvg
-  lvcreate -l 50% -n sapmntlv sapmntvg
+  lvcreate -l 50%VG -n sapmntlv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
   mkfs.xfs /dev/sapmntvg/usrsaplv
 echo "logicalvols end" >> /tmp/parameter.txt
