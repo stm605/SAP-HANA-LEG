@@ -44,10 +44,10 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
-  pvcreate sapmntvglun 
-  vgcreate sapmntvg sapmntvglun
+  pvcreate sapmntvg $sapmntvglun 
+  vgcreate sapmntvg $sapmntvglun
   lvcreate -l 50%FREE -n usrsaplv sapmntvg
-  lvcreate -l 50%FREE -n sapmntlv sapmntvg
+  lvcreate -l 50% -n sapmntlv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
   mkfs.xfs /dev/sapmntvg/usrsaplv
 echo "logicalvols end" >> /tmp/parameter.txt
