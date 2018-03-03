@@ -21,14 +21,21 @@
       },
       "defaultValue": "no"
     },
-     "HANASubnetName": {
+    "HANASubnetName": {
       "type": "string",
       "defaultValue": "SAPDataSubnet",
       "metadata": {
         "description": "The data subnet name"
       }
     },
-     "NetworkName": {
+    "HANASubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.5.0/24",
+      "metadata": {
+        "description": "The data subnet prefix"
+      }
+    },
+    "NetworkName": {
       "type": "string",
       "defaultValue": "ra-sap-hana-vnet",
       "metadata": {
@@ -48,8 +55,8 @@
     },
     "OperatingSystemVersion": {
       "type": "string",
-         "defaultValue": "latest",
-         "allowedValues": [
+      "defaultValue": "latest",
+      "allowedValues": [
         "latest",
         "2017.12.11",
         "2017.11.08"
@@ -74,7 +81,7 @@
       "metadata": {
         "description": "Size of VM to deploy"
       },
-      "defaultValue": "Standard_GS5 (448 GB, Certified)",
+      "defaultValue": "Standard_E16s_v3 (128 GB - AppServer)",
       "allowedValues": [
         "Standard_GS5     (448 GB - DBServer)",
         "Standard_M64s    (1 TB   - DBServer)",
@@ -110,16 +117,16 @@
       },
       "defaultValue": "10.1.5.0"
     },
-  "enableSecondaryIp": {
-    "type": "string",
-    "metadata": {
-      "description": "Operating system for HANA Machine"
-    },
-    "defaultValue": "no",
-    "allowedValues": [
-      "yes",
-      "no"
-    ]
+    "enableSecondaryIp": {
+      "type": "string",
+      "metadata": {
+        "description": "Operating system for HANA Machine"
+      },
+      "defaultValue": "no",
+      "allowedValues": [
+        "yes",
+        "no"
+      ]
     }
   },
   "variables": {
