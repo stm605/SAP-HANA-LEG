@@ -1,0 +1,238 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "computerName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Name"
+      }
+    },
+    "customUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Uri for SAP Bits"
+      }
+    },
+    "ExistingNetworkResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Type in the name of the Resource Group for an existing network or leave no to use the same one"
+      },
+      "defaultValue": "no"
+    },
+     "HANASubnetName": {
+      "type": "string",
+      "defaultValue": "SAPDataSubnet",
+      "metadata": {
+        "description": "The data subnet name"
+      }
+    },
+     "NetworkName": {
+      "type": "string",
+      "defaultValue": "ra-sap-hana-vnet",
+      "metadata": {
+        "description": "The HANA VNET"
+      }
+    },
+    "OperatingSystem": {
+      "type": "string",
+      "metadata": {
+        "description": "Operating system for HANA Machine"
+      },
+      "defaultValue": "SLES for SAP 12 SP3",
+      "allowedValues": [
+        "SLES for SAP 12 SP3",
+        "RHEL 7.2 for SAP HANA"
+      ]
+    },
+    "OperatingSystemVersion": {
+      "type": "string",
+         "defaultValue": "latest",
+         "allowedValues": [
+        "latest",
+        "2017.12.11",
+        "2017.11.08"
+      ]
+    },
+    "vmUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine"
+      },
+      "defaultValue": "adminuser"
+    },
+    "vmPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine"
+      },
+      "defaultValue": "Hana1234567!"
+    },
+    "vmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Size of VM to deploy"
+      },
+      "defaultValue": "Standard_GS5 (448 GB, Certified)",
+      "allowedValues": [
+        "Standard_GS5     (448 GB - DBServer)",
+        "Standard_M64s    (1 TB   - DBServer)",
+        "Standard_M64ms   (1.7 TB - DBServer)",
+        "Standard_M128s   (2 TB   - DBServer)",
+        "Standard_M128ms  (3.8 TB - DBServer)",
+        "Standard_E16s_v3 (128 GB - AppServer)",
+        "Standard_E32s_v3 (256 GB - AppServer)",
+        "Standard_E64s_v3 (448 GB - AppServer)"
+      ]
+    },
+    "IPAllocationMethod": {
+      "type": "string",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "IP Allocation Method"
+      }
+    },
+    "PrimaryStaticIP": {
+      "type": "string",
+      "metadata": {
+        "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
+      },
+      "defaultValue": "10.1.5.0"
+    },
+    "SecondaryStaticIP": {
+      "type": "string",
+      "metadata": {
+        "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
+      },
+      "defaultValue": "10.1.5.0"
+    },
+  "enableSecondaryIp": {
+    "type": "string",
+    "metadata": {
+      "description": "Operating system for HANA Machine"
+    },
+    "defaultValue": "no",
+    "allowedValues": [
+      "yes",
+      "no"
+    ]
+    }
+  },
+  "variables": {
+    "api-version": "2017-06-01",
+    "api-version-vm": "2017-03-30",
+    "vmPassword": "HANA07061992!",
+    "mode": "Push",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
+    "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('computerName'),'-static'),concat(parameters('computerName'),'-static'))]",
+    "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
+    "subnetRef": "[parameters('HANAsubnetRef')]",
+    "OperatingSystemSpec": {
+      "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
+      "imageOffer": "[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
+      "sku": "[if (contains(parameters('OperatingSystem'),'12 SP3'),'12-SP3','7.2')]"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('api-version')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('computerName'),'-static')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "Primary",
+            "properties": {
+              "primary": true,
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('PrimaryStaticIP')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          },
+          {
+            "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
+            "name": "Secondary",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('SecondaryStaticIP')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('computerName')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('computerName')]",
+          "adminUsername": "[parameters('vmUserName')]",
+          "adminPassword": "[parameters('vmPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('OperatingSystemSpec').imagePublisher]",
+            "offer": "[variables('OperatingSystemSpec').imageOffer]",
+            "sku": "[variables('OperatingSystemSpec').sku]",
+            "version": "[parameters('OperatingSystemVersion')]"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+      ]
+      ,
+      "resources": [
+        {
+          "type": "extensions",
+          "name": "scriptextension",
+          "apiVersion": "[variables('api-version-vm')]",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "CustomScript",
+            "typeHandlerVersion": "2.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
+              ],
+              "commandToExecute": "[concat('sh appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('computerName'))]"
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {
+
+  }
+}
