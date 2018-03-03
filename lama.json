@@ -96,6 +96,7 @@
     },
     "IPAllocationMethod": {
       "type": "string",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
