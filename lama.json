@@ -9,10 +9,11 @@
       }
     },
     "customUri": {
-      "type": "string",
+      "defaultValue": "https://smlama.blob.core.windows.net/smlamastaging",
       "metadata": {
         "description": "Uri for SAP Bits"
-      }
+      },
+      "type": "string"
     },
     "ExistingNetworkResourceGroup": {
       "type": "string",
