@@ -4,6 +4,6 @@
     "\\scripts",
     "\\vms"
   ],
-  "SelectedNode": "\\azuredeploy.json",
+  "SelectedNode": "\\vms\\appserver.json",
   "PreviewInSolutionExplorer": false
 }
