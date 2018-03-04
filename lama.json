@@ -138,8 +138,7 @@
     "mode": "Push",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
     "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('computerName'),'-static'),concat(parameters('computerName'),'-static'))]",
-    "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
-    "subnetRef": "[variables('HANAsubnetRef')]",
+    "subnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
       "imageOffer": "[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
