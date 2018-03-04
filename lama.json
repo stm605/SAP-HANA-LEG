@@ -120,15 +120,15 @@
       "defaultValue": "10.1.5.0"
     },
     "enableSecondaryIp": {
-      "allowedValues": [
-        "yes",
-        "no"
-      ],
-      "defaultValue": "yes",
+      "type": "string",
       "metadata": {
         "description": "Selection if one or two IP addresses are assigned"
       },
-      "type": "string"
+      "defaultValue": "yes",
+      "allowedValues": [
+        "yes",
+        "no"
+      ]
     }
   },
   "variables": {
@@ -139,6 +139,7 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
     "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('computerName'),'-static'),concat(parameters('computerName'),'-static'))]",
     "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
+    "subnetRef": "[variables('HANAsubnetRef')]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
       "imageOffer": "[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
@@ -160,7 +161,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('PrimaryStaticIP')]",
               "subnet": {
-                "id": "[variables('HANAsubnetRef')]"
+                "id": "[variables('subnetRef')]"
               }
             }
           },
@@ -171,7 +172,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('SecondaryStaticIP')]",
               "subnet": {
-                "id": "[variables('HANAsubnetRef')]"
+                "id": "[variables('subnetRef')]"
               }
             }
           }
@@ -230,7 +231,7 @@
               "fileUris": [
                 "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/lama.sh"
               ],
-              "commandToExecute": "[concat('sh lama.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+              "commandToExecute": "[concat('sh lama.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'))]"
             }
           },
           "dependsOn": [
