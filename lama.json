@@ -120,15 +120,15 @@
       "defaultValue": "10.1.5.0"
     },
     "enableSecondaryIp": {
-      "type": "string",
-      "metadata": {
-        "description": "Operating system for HANA Machine"
-      },
-      "defaultValue": "no",
       "allowedValues": [
         "yes",
         "no"
-      ]
+      ],
+      "defaultValue": "yes",
+      "metadata": {
+        "description": "Selection if one or two IP addresses are assigned"
+      },
+      "type": "string"
     }
   },
   "variables": {
@@ -139,7 +139,6 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
     "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('computerName'),'-static'),concat(parameters('computerName'),'-static'))]",
     "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
-    "subnetRef": "[parameters('HANAsubnetRef')]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
       "imageOffer": "[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
@@ -161,7 +160,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('PrimaryStaticIP')]",
               "subnet": {
-                "id": "[variables('subnetRef')]"
+                "id": "[variables('HANAsubnetRef')]"
               }
             }
           },
@@ -172,7 +171,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('SecondaryStaticIP')]",
               "subnet": {
-                "id": "[variables('subnetRef')]"
+                "id": "[variables('HANAsubnetRef')]"
               }
             }
           }
