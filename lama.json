@@ -146,10 +146,32 @@
     }
   },
   "resources": [
+      {
+        "condition": "[equals(parameters('IPAllocationMethod'), 'Static')]",
+        "apiVersion": "[variables('api-version')]",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(parameters('vmName'),'-static')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Static",
+                "privateIPAddress": "[parameters('StaticIP')]",
+                "subnet": {
+                  "id": "[variables('subnetRef')]"
+                }
+              }
+            }
+          ]
+        }
+      },
     {
+      "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('computerName'),'-static')]",
+      "name": "[concat(parameters('computerName'),'-secondaryip')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "ipConfigurations": [
@@ -165,7 +187,6 @@
             }
           },
           {
-            "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
             "name": "Secondary",
             "properties": {
               "privateIPAllocationMethod": "Static",
@@ -178,6 +199,28 @@
         ]
       }
     },
+    {
+        "condition":"[equals(parameters('enableSecondaryIp'), 'no')]",
+        "apiVersion": "[variables('api-version')]",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(parameters('computerName'),'-nosecondaryip')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "Primary",
+              "properties": {
+                "primary": true,
+                "privateIPAllocationMethod": "Static",
+                "privateIPAddress": "[parameters('PrimaryStaticIP')]",
+                "subnet": {
+                  "id": "[variables('subnetRef')]"
+                }
+              }
+            }
+          ]
+        }
+      },
     {
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[parameters('computerName')]",
