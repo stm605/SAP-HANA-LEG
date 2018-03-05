@@ -10,11 +10,9 @@ vmSize=$6
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
-sudo zypper install -y sapconf
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /sapmnt
-sudo mkdir /usr/sap
+sudo mkdir /tmp/LaMaBits
 
 
 # Install .NET Core and AzCopy
@@ -30,7 +28,7 @@ sudo ./install.sh
 
 sudo zypper se -t pattern
 sudo zypper in -t pattern sap-hana
-sudo saptune solution apply HANA
+# sudo saptune solution apply HANA
 
 # step2
 echo $Uri >> /tmp/url.txt
@@ -41,23 +39,7 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
-
-# echo "logicalvols start" >> /tmp/parameter.txt
-#  sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
-#  pvcreate sapmntvg $sapmntvglun 
-#  vgcreate sapmntvg $sapmntvglun
-#  lvcreate -l 50%FREE -n usrsaplv sapmntvg
-#  lvcreate -l 50%VG -n sapmntlv sapmntvg
-#  mkfs.xfs /dev/sapmntvg/sapmntlv
-#  mkfs.xfs /dev/sapmntvg/usrsaplv
-# echo "logicalvols end" >> /tmp/parameter.txt
-
-#!/bin/bash
-# echo "mounthanashared start" >> /tmp/parameter.txt
-# mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
-# mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap
-# echo "mounthanashared end" >> /tmp/parameter.txt
-# echo "write to fstab start" >> /tmp/parameter.txt
-# echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
-# echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
-# echo "write to fstab end" >> /tmp/parameter.txt
+cd /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPCAR
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR
