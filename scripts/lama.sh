@@ -13,6 +13,8 @@ sudo zypper install -y unrar
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /tmp/LaMaBits
+sudo mkdir /tmp/LaMaBits/hostagent
+sudo mkdir /tmp/LaMaBits/sapaext
 
 
 # Install .NET Core and AzCopy
@@ -39,7 +41,16 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
-cd /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPCAR
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR
+/usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
+
+chmod -R 777 /tmp/LaMaBits
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+/tmp/LaMaBits/hostagent/saphostexec -install -passwd Lama1234567!
+
+
+
