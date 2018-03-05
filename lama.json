@@ -150,7 +150,7 @@
         "condition": "[equals(parameters('IPAllocationMethod'), 'Static')]",
         "apiVersion": "[variables('api-version')]",
         "type": "Microsoft.Network/networkInterfaces",
-        "name": "[concat(parameters('vmName'),'-static')]",
+        "name": "[concat(parameters('computerName'),'-static')]",
         "location": "[resourceGroup().location]",
         "properties": {
           "ipConfigurations": [
