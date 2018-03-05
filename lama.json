@@ -126,7 +126,7 @@
     "vmPassword": "HANA07061992!",
     "mode": "Push",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
-    "nicName": "[parameters('computerName')]",
+    "nicName": "[if(equals(parameters('enableSecondaryIp'),'yes'),concat(parameters('computerName'),'-secondaryip'),concat(parameters('computerName'),'-nosecondaryip'))]",
     "subnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
