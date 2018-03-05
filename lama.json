@@ -94,17 +94,6 @@
         "Standard_E64s_v3 (448 GB - AppServer)"
       ]
     },
-    "IPAllocationMethod": {
-      "type": "string",
-      "defaultValue": "Static",
-      "allowedValues": [
-        "Dynamic",
-        "Static"
-      ],
-      "metadata": {
-        "description": "IP Allocation Method"
-      }
-    },
     "PrimaryStaticIP": {
       "type": "string",
       "metadata": {
@@ -137,7 +126,7 @@
     "vmPassword": "HANA07061992!",
     "mode": "Push",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
-    "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('computerName'),'-static'),concat(parameters('computerName'),'-static'))]",
+    "nicName": "[parameters('computerName')]",
     "subnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
@@ -146,27 +135,6 @@
     }
   },
   "resources": [
-      {
-        "condition": "[equals(parameters('IPAllocationMethod'), 'Static')]",
-        "apiVersion": "[variables('api-version')]",
-        "type": "Microsoft.Network/networkInterfaces",
-        "name": "[concat(parameters('computerName'),'-static')]",
-        "location": "[resourceGroup().location]",
-        "properties": {
-          "ipConfigurations": [
-            {
-              "name": "ipconfig1",
-              "properties": {
-                "privateIPAllocationMethod": "Static",
-                "privateIPAddress": "[parameters('StaticIP')]",
-                "subnet": {
-                  "id": "[variables('subnetRef')]"
-                }
-              }
-            }
-          ]
-        }
-      },
     {
       "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
       "apiVersion": "[variables('api-version')]",
