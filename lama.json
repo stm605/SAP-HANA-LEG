@@ -8,6 +8,12 @@
         "description": "VM Name"
       }
     },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Name"
+      }
+    },
     "customUri": {
       "defaultValue": "https://smlama.blob.core.windows.net/smlamastaging",
       "metadata": {
@@ -126,7 +132,7 @@
     "vmPassword": "HANA07061992!",
     "mode": "Push",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
-    "nicName": "[if(equals(parameters('enableSecondaryIp'),'yes'),concat(parameters('computerName'),'-secondaryip'),concat(parameters('computerName'),'-nosecondaryip'))]",
+    "nicName": "[if(equals(parameters('enableSecondaryIp'),'yes'),concat(parameters('vmName'),'-secondaryip'),concat(parameters('vmName'),'-nosecondaryip'))]",
     "subnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
@@ -139,7 +145,7 @@
       "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(parameters('computerName'),'-secondaryip')]",
+      "name": "[concat(parameters('vmName'),'-secondaryip')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "ipConfigurations": [
@@ -171,7 +177,7 @@
         "condition":"[equals(parameters('enableSecondaryIp'), 'no')]",
         "apiVersion": "[variables('api-version')]",
         "type": "Microsoft.Network/networkInterfaces",
-        "name": "[concat(parameters('computerName'),'-nosecondaryip')]",
+        "name": "[concat(parameters('vmName'),'-nosecondaryip')]",
         "location": "[resourceGroup().location]",
         "properties": {
           "ipConfigurations": [
@@ -191,7 +197,7 @@
       },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('computerName')]",
+      "name": "[parameters('vmName')]",
       "apiVersion": "[variables('api-version-vm')]",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -245,7 +251,7 @@
             }
           },
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', parameters('computerName'))]"
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
           ]
         }
       ]
