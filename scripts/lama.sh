@@ -50,7 +50,9 @@ chmod -R 777 /tmp/LaMaBits
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
-/tmp/LaMaBits/hostagent/saphostexec -install &> /tmp/hostageninst.txt
+cd /tmp/LaMaBits/hostagent
+
+saphostexec -install &> /tmp/hostageninst.txt
 
 echo  "sapadm:Lama1234567!" | chpasswd
 
