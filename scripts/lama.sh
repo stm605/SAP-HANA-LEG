@@ -52,7 +52,21 @@ chmod -R 777 /tmp/LaMaBits
 
 cd /tmp/LaMaBits/hostagent
 
-saphostexec -install &> /tmp/hostageninst.txt
+./saphostexec -install &> /tmp/hostageninst.txt
 
 echo  "sapadm:Lama1234567!" | chpasswd
 
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext
