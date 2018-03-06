@@ -44,8 +44,11 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
 chmod -R 777 /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
 
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
@@ -60,6 +63,7 @@ cd /tmp/LaMaBits/sapaext
 
 cp *.so /usr/sap/hostctrl/exe/
 
+mkdir /usr/sap/hostctrl/exe/operations.d
 cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
 
 cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
