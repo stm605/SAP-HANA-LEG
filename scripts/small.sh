@@ -45,6 +45,12 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
+touch /home/me.txt
+
+mv /home /home.new
+mkdir /home 
+
+
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 
 echo "logicalvols start" >> /tmp/parameter.txt
@@ -52,7 +58,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   hanavg2lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
   pvcreate $hanavg1lun $hanavg2lun
   vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
+  lvcreate -l 80%VG -n datalv hanavg
   lvcreate -l 20%VG -n loglv hanavg
   mkfs.xfs /dev/hanavg/datalv
   mkfs.xfs /dev/hanavg/loglv
@@ -70,10 +76,12 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
   vgcreate usrsapvg $usrsapvglun 
   lvcreate -l 100%FREE -n sharedlv sharedvg 
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+  lvcreate -l 97%VG -n usrsaplv usrsapvg
+  lvcreate -l 3%VG -n homelv usrsapvg
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
+  mkfs -t xfs /dev/usrsapvg/homelv
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
 
@@ -82,6 +90,7 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
+mount -t xfs /dev/usrsapvg/homelv /home
 mount -t xfs /dev/hanavg/datalv /hana/data
 mount -t xfs /dev/hanavg/loglv /hana/log 
 mkdir /hana/data/sapbits
@@ -93,7 +102,12 @@ echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/usrsapvg-homelv /home xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
+
+mv /home.new/* /home
+
+echo "It worked" >> /home/me.txt
 
 if [ ! -d "/hana/data/sapbits" ]
  then
