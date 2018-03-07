@@ -41,23 +41,35 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
+touch /home/me.txt
+
+mv /home /home.new
+mkdir /home 
 
 echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
   pvcreate sapmntvg $sapmntvglun 
   vgcreate sapmntvg $sapmntvglun
   lvcreate -l 50%FREE -n usrsaplv sapmntvg
-  lvcreate -l 50%VG -n sapmntlv sapmntvg
+  lvcreate -l 40%VG -n sapmntlv sapmntvg
+  lvcreate -l 10%VG -n homelv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
   mkfs.xfs /dev/sapmntvg/usrsaplv
+  mkfs.xfs /dev/sapmntvg/homelv
 echo "logicalvols end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
 mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap
+mount -t xfs /dev/sapmntvg/homelv /home
 echo "mounthanashared end" >> /tmp/parameter.txt
 echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-homelv /home xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
+
+mv /home.new/* /home
+
+echo "It worked" >> /home/me.txt
