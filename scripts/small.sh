@@ -19,6 +19,11 @@ sudo mkdir /hana/log
 sudo mkdir /hana/shared
 sudo mkdir /hana/backup
 sudo mkdir /usr/sap
+sudo mkdir /etc/systemd/login.conf.d
+sudo mkdir /tmp/LaMaBits
+sudo mkdir /tmp/LaMaBits/hostagent
+sudo mkdir /tmp/LaMaBits/sapaext
+
 
 
 # Install .NET Core and AzCopy
@@ -49,6 +54,40 @@ touch /home/me.txt
 
 mv /home /home.new
 mkdir /home 
+
+/usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
+
+chmod -R 777 /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+cd /tmp/LaMaBits/hostagent
+
+./saphostexec -upgrade &> /tmp/hostageninst.txt
+
+echo  "sapadm:Lama1234567!" | chpasswd
+
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+mkdir /usr/sap/hostctrl/exe/operations.d
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext
 
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
