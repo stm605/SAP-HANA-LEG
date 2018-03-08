@@ -10,7 +10,7 @@ vmSize=$6
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
-sudo zypper install -y sapconf
+sudo zypper install -y krb5-client samba-winbind
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /hana
@@ -59,35 +59,6 @@ mkdir /home
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
-
-chmod -R 777 /tmp/LaMaBits
-
-cp /tmp/LaMaBits/resolv.conf /etc
-
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
-
-cd /tmp/LaMaBits/hostagent
-
-./saphostexec -upgrade &> /tmp/hostageninst.txt
-
-echo  "sapadm:Lama1234567!" | chpasswd
-
-cd /tmp/LaMaBits/sapaext
-
-cp *.so /usr/sap/hostctrl/exe/
-
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
-
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
-
-cp sapacext /usr/sap/hostctrl/exe/
-
-cd /usr/sap/hostctrl/exe/
-
-chown root:sapsys sapacext
-chmod 750 sapacext
 
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
@@ -195,5 +166,34 @@ echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
+
+chmod -R 777 /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+cd /tmp/LaMaBits/hostagent
+
+./saphostexec -upgrade &> /tmp/hostageninst.txt
+
+echo  "sapadm:Lama1234567!" | chpasswd
+
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+mkdir /usr/sap/hostctrl/exe/operations.d
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext
 
 shutdown -r 1
