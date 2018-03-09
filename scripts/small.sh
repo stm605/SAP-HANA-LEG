@@ -121,8 +121,6 @@ echo "It worked" >> /home/me.txt
 
 chmod -R 777 /tmp/LaMaBits
 
-cp /tmp/LaMaBits/resolv.conf /etc
-
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
@@ -197,5 +195,6 @@ cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
+cp /tmp/LaMaBits/resolv.conf /etc
 
 shutdown -r 1
