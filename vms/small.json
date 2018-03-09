@@ -8,6 +8,12 @@
         "description": "VM Name"
       }
     },
+    "HANAVHOST": {
+      "type": "string",
+      "metadata": {
+        "description": "HANA Virtual Host Name"
+      }
+    },
     "customUri": {
       "type": "string",
       "metadata": {
