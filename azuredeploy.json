@@ -148,6 +148,14 @@
         "description": "VM Name"
       }
     },
+    "HANAVHOST": {
+      "type": "string",
+      "maxLength": 13,
+      "metadata": {
+        "description": "SAP HANA Virtual Host Name"
+      },
+      "defaultValue": "VMName"
+    },
     "VMPassword": {
       "type": "securestring",
       "metadata": {
@@ -176,7 +184,7 @@
       "metadata": {
         "description": "Username for the Virtual Machine"
       },
-      "defaultValue": "testuser"
+      "defaultValue": "adminuser"
     }
   },
   "variables": {
@@ -253,6 +261,9 @@
           },
           "vmPassword": {
             "value": "[parameters('vmPassword')]"
+          },
+          "hanavhost": {
+            "value": "[parameters('HANAVHOST')]"
           },
           "hanaSid": {
             "value": "[parameters('hanaSid')]"
