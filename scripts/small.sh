@@ -119,6 +119,36 @@ mv /home.new/* /home
 
 echo "It worked" >> /home/me.txt
 
+chmod -R 777 /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+cd /tmp/LaMaBits/hostagent
+
+./saphostexec -install &> /tmp/hostageninst.txt
+
+echo  "sapadm:Lama1234567!" | chpasswd
+
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+mkdir /usr/sap/hostctrl/exe/operations.d
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext
+
+
 if [ ! -d "/hana/data/sapbits" ]
  then
  mkdir "/hana/data/sapbits"
@@ -167,33 +197,5 @@ cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
-chmod -R 777 /tmp/LaMaBits
-
-cp /tmp/LaMaBits/resolv.conf /etc
-
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
-
-cd /tmp/LaMaBits/hostagent
-
-./saphostexec -upgrade &> /tmp/hostageninst.txt
-
-echo  "sapadm:Lama1234567!" | chpasswd
-
-cd /tmp/LaMaBits/sapaext
-
-cp *.so /usr/sap/hostctrl/exe/
-
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
-
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
-
-cp sapacext /usr/sap/hostctrl/exe/
-
-cd /usr/sap/hostctrl/exe/
-
-chown root:sapsys sapacext
-chmod 750 sapacext
 
 shutdown -r 1
