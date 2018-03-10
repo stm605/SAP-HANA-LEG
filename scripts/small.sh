@@ -6,7 +6,7 @@ HANANUMBER=$5
 vmSize=$6
 HANAVHOST=$7
 
-echo HANAVHOST >> /tmp/vhost.txt
+echo $HANAVHOST >> /tmp/vhost.txt
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
@@ -182,7 +182,7 @@ cd /hana/data/sapbits
 #!/bin/bash
 cd /hana/data/sapbits
 myhost=`hostname`
-sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+sedcmd="s/REPLACE-WITH-HOSTNAME/$HANAVHOST/g"
 sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/AweS0me@PW/$HANAPWD/g"
