@@ -4,8 +4,10 @@ HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
 HANAVHOST=$6
+SecondaryStaticIP=$7
 
 echo $HANAVHOST >> /tmp/vhost.txt
+echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
@@ -26,6 +28,7 @@ sudo mkdir /tmp/LaMaBits/hostagent
 sudo mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
+sudo ifconfig eth0:1 $SecondaryStaticIP netmask 255.255.255.0 up
 
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
