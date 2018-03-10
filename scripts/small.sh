@@ -3,8 +3,7 @@ HANAUSR=$2
 HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
-vmSize=$6
-HANAVHOST=$7
+HANAVHOST=$6
 
 echo $HANAVHOST >> /tmp/vhost.txt
 
