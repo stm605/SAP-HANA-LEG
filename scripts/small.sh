@@ -166,6 +166,8 @@ echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
+cp /tmp/LaMaBits/resolv.conf /etc
+
 date >> /tmp/testdate
 cd /hana/data/sapbits
 
@@ -195,7 +197,5 @@ echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 ./hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
-
-cp /tmp/LaMaBits/resolv.conf /etc
 
 shutdown -r 1
