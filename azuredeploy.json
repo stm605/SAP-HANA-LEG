@@ -269,7 +269,7 @@
             "value": "[parameters('vmPassword')]"
           },
           "hanavhost": {
-            "value": "[parameters('hHANAVHOST')]"
+            "value": "[parameters('HANAVHOST')]"
           },
           "hanaSid": {
             "value": "[parameters('hanaSid')]"
