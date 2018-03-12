@@ -9,6 +9,17 @@ SecondaryStaticIP=$7
 echo $HANAVHOST >> /tmp/vhost.txt
 echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 
+sudo ifconfig eth0:0 $SecondaryStaticIP netmask 255.255.255.0 up
+
+touch /etc/sysconfig/network/ifcfg-eth0:0
+
+echo "BOOTPROTO='static'" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo "DHCLIENT6_MODE='managed'" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo "ecMTU=''" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo "STARTMODE='onboot'" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo "CLOUD_NETCONFIG_MANAGE='yes'" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo IPADDR=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0:0
+
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
@@ -28,7 +39,7 @@ sudo mkdir /tmp/LaMaBits/hostagent
 sudo mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
-sudo ifconfig eth0:1 $SecondaryStaticIP netmask 255.255.255.0 up
+
 
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
@@ -198,7 +209,7 @@ echo "hana preapre end" >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-./hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
