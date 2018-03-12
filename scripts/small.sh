@@ -13,12 +13,11 @@ sudo ifconfig eth0:0 $SecondaryStaticIP netmask 255.255.255.0 up
 
 touch /etc/sysconfig/network/ifcfg-eth0:0
 
-echo "BOOTPROTO='static'" >> /etc/sysconfig/network/ifcfg-eth0:0
-echo "DHCLIENT6_MODE='managed'" >> /etc/sysconfig/network/ifcfg-eth0:0
-echo "ecMTU=''" >> /etc/sysconfig/network/ifcfg-eth0:0
-echo "STARTMODE='onboot'" >> /etc/sysconfig/network/ifcfg-eth0:0
-echo "CLOUD_NETCONFIG_MANAGE='yes'" >> /etc/sysconfig/network/ifcfg-eth0:0
+echo DEVICE=eth0:0 >> /etc/sysconfig/network/ifcfg-eth0:0
+echo BOOTPROTO=static >> /etc/sysconfig/network/ifcfg-eth0:0
+echo ONBOOT=yes >> /etc/sysconfig/network/ifcfg-eth0:0
 echo IPADDR=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0:0
+echo NETMASK=255.255.255.0 >> /etc/sysconfig/network/ifcfg-eth0:0
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
