@@ -206,8 +206,7 @@
     "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
     "vmSizeArray": "[split(parameters('vmSize'),' ')]",
-    "vmSize": "[variables('vmSizeArray')[0]]",
-    "computerName": "[toLower(parameters('vmName'))]"
+    "vmSize": "[variables('vmSizeArray')[0]]"
   },
   "resources": [
     {
