@@ -19,6 +19,8 @@ echo ONBOOT=yes >> /etc/sysconfig/network/ifcfg-eth0:0
 echo IPADDR=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0:0
 echo NETMASK=255.255.255.0 >> /etc/sysconfig/network/ifcfg-eth0:0
 
+echo "$SecondaryStaticIP h11-hanadb.smcostco.local h11-hanadb" >> /etc/hosts
+
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
