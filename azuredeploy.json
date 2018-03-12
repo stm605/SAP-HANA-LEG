@@ -2,6 +2,12 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "computerName": {
+      "type": "string",
+      "metadata": {
+        "description": "VM Name"
+      }
+    },
     "addressPrefixes": {
       "type": "string",
       "defaultValue": "10.1.0.0/16",
@@ -201,7 +207,7 @@
     "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
     "vmSizeArray": "[split(parameters('vmSize'),' ')]",
     "vmSize": "[variables('vmSizeArray')[0]]",
-    "computerName": "[toLower(parameters('vmName'))]",
+    "computerName": "[toLower(parameters('vmName'))]"
   },
   "resources": [
     {
