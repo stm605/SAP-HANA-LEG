@@ -334,6 +334,9 @@
           "hanaNumber": {
             "value": "[parameters('hanaNumber')]"
           },
+          "hanavhost": {
+            "value": "[parameters('HANAVHOST')]"
+          },
           "vmSize": {
             "value": "[variables('vmSize')]"
           },
