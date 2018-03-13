@@ -18,14 +18,6 @@ echo $SecIP >> /tmp/SecIP.txt
 
 ip addr add $SecIP dev eth0 label eth0:1
 
-#sudo ifconfig eth0:0 $SecondaryStaticIP netmask 255.255.255.0 up
-
-#echo IPADDR1=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0
-#echo NETMASK=255.255.255.0 >> /etc/sysconfig/network/ifcfg-eth0
-#echo BOOTPROTO=static >> /etc/sysconfig/network/ifcfg-eth0
-#echo ONBOOT=yes >> /etc/sysconfig/network/ifcfg-eth0
-#echo LABEL1=1 >> /etc/sysconfig/network/ifcfg-eth0
-
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1

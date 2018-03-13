@@ -3,14 +3,27 @@ HANAUSR=$2
 HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
-vmSize=$6
+HANAVHOST=$6
+SecondaryStaticIP=$7
+cidr=/24
+SecIP=$SecondaryStaticIP$cidr
+
+/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
+
+echo $HANAVHOST >> /tmp/vhost.txt
+echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
+echo $SecIP >> /tmp/SecIP.txt
+
+ip addr add $SecIP dev eth0 label eth0:1
 
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
-sudo zypper install -y sapconf
+sudo zypper install -y krb5-client samba-winbind
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /hana
@@ -19,7 +32,11 @@ sudo mkdir /hana/log
 sudo mkdir /hana/shared
 sudo mkdir /hana/backup
 sudo mkdir /usr/sap
+sudo mkdir /tmp/LaMaBits
+sudo mkdir /tmp/LaMaBits/hostagent
+sudo mkdir /tmp/LaMaBits/sapaext
 
+groupadd -g 1001 sapsys
 
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
@@ -44,6 +61,15 @@ sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
 sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=229376/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
+
+touch /home/me.txt
+
+mv /home /home.new
+mkdir /home 
+
+/usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 echo "logicalvols start" >> /tmp/parameter.txt
@@ -70,10 +96,12 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
   vgcreate usrsapvg $usrsapvglun 
   lvcreate -l 100%FREE -n sharedlv sharedvg 
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+  lvcreate -l 97%VG -n usrsaplv usrsapvg
+  lvcreate -l 3%VG -n homelv usrsapvg
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
+  mkfs -t xfs /dev/usrsapvg/homelv
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
 
@@ -82,6 +110,7 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
+mount -t xfs /dev/usrsapvg/homelv /home
 mount -t xfs /dev/hanavg/datalv /hana/data
 mount -t xfs /dev/hanavg/loglv /hana/log 
 mkdir /hana/data/sapbits
@@ -93,7 +122,39 @@ echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/usrsapvg-homelv /home xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
+
+mv /home.new/* /home
+
+echo "It worked" >> /home/me.txt
+
+chmod -R 777 /tmp/LaMaBits
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+cd /tmp/LaMaBits/hostagent
+
+./saphostexec -install &> /tmp/hostageninst.txt
+
+echo  "sapadm:Lama1234567!" | chpasswd
+
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+mkdir /usr/sap/hostctrl/exe/operations.d
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext
 
 if [ ! -d "/hana/data/sapbits" ]
  then
@@ -128,7 +189,7 @@ cd /hana/data/sapbits
 #!/bin/bash
 cd /hana/data/sapbits
 myhost=`hostname`
-sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+sedcmd="s/REPLACE-WITH-HOSTNAME/$HANAVHOST/g"
 sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/AweS0me@PW/$HANAPWD/g"
