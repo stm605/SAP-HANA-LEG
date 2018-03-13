@@ -5,17 +5,26 @@ HANASID=$4
 HANANUMBER=$5
 HANAVHOST=$6
 SecondaryStaticIP=$7
+cidr=/24
+SecIP=$SecondaryStaticIP$cidr
+
+/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
 
 echo $HANAVHOST >> /tmp/vhost.txt
 echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
+echo $SecIP >> /tmp/SecIP.txt
 
-sudo ifconfig eth0:0 $SecondaryStaticIP netmask 255.255.255.0 up
+ip addr add $SecIP dev eth0 label eth0:1
 
-echo IPADDR1=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0
-echo NETMASK=255.255.255.0 >> /etc/sysconfig/network/ifcfg-eth0
-echo BOOTPROTO=static >> /etc/sysconfig/network/ifcfg-eth0
-echo ONBOOT=yes >> /etc/sysconfig/network/ifcfg-eth0
-echo LABEL1=1 >> /etc/sysconfig/network/ifcfg-eth0
+#sudo ifconfig eth0:0 $SecondaryStaticIP netmask 255.255.255.0 up
+
+#echo IPADDR1=$SecondaryStaticIP >> /etc/sysconfig/network/ifcfg-eth0
+#echo NETMASK=255.255.255.0 >> /etc/sysconfig/network/ifcfg-eth0
+#echo BOOTPROTO=static >> /etc/sysconfig/network/ifcfg-eth0
+#echo ONBOOT=yes >> /etc/sysconfig/network/ifcfg-eth0
+#echo LABEL1=1 >> /etc/sysconfig/network/ifcfg-eth0
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
@@ -70,7 +79,6 @@ mkdir /home
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
@@ -176,8 +184,6 @@ echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
 /usr/bin/wget --quiet "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
-
-cp /tmp/LaMaBits/resolv.conf /etc
 
 date >> /tmp/testdate
 cd /hana/data/sapbits
