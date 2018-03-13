@@ -351,7 +351,7 @@
                     "fileUris": [
                       "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/medium.sh"
                     ],
-                    "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVHOST'), ' ', parameters('SecondaryStaticIP'))]"
+                    "commandToExecute": "[concat('sh medium.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVHOST'), ' ', parameters('SecondaryStaticIP'))]"
                   }
                 }
             }]
