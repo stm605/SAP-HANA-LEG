@@ -45,6 +45,10 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=294912/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
+touch /home/me.txt
+
+mv /home /home.new
+mkdir /home 
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 

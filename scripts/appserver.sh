@@ -10,7 +10,6 @@ vmSize=$6
 sudo zypper install -y glibc-2.22-51.6
 sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
-sudo zypper install -y sapconf
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /sapmnt
@@ -50,7 +49,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
   pvcreate sapmntvg $sapmntvglun 
   vgcreate sapmntvg $sapmntvglun
-  lvcreate -l 50%FREE -n usrsaplv sapmntvg
+  lvcreate -l 50%VG -n usrsaplv sapmntvg
   lvcreate -l 40%VG -n sapmntlv sapmntvg
   lvcreate -l 10%VG -n homelv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
