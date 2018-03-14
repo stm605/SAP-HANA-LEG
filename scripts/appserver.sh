@@ -133,3 +133,5 @@ cd /usr/sap/hostctrl/exe/
 
 chown root:sapsys sapacext
 chmod 750 sapacext
+
+shutdown -r 1
