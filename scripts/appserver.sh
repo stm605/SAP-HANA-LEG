@@ -8,6 +8,19 @@ SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
 
+#install hana prereqs
+sudo zypper install -y glibc-2.22-51.6
+sudo zypper install -y systemd-228-142.1
+sudo zypper install -y unrar
+sudo zypper install -y krb5-client samba-winbind
+sudo zypper install -y saptune
+sudo mkdir /etc/systemd/login.conf.d
+sudo mkdir /sapmnt
+sudo mkdir /usr/sap
+sudo mkdir /tmp/LaMaBits
+sudo mkdir /tmp/LaMaBits/hostagent
+sudo mkdir /tmp/LaMaBits/sapaext
+
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
 cp /tmp/LaMaBits/resolv.conf /etc
@@ -18,17 +31,6 @@ echo $SecIP >> /tmp/SecIP.txt
 
 ip addr add $SecIP dev eth0 label eth0:1
 
-#install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
-sudo zypper install -y unrar
-sudo zypper install -y saptune
-sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /sapmnt
-sudo mkdir /usr/sap
-sudo mkdir /tmp/LaMaBits
-sudo mkdir /tmp/LaMaBits/hostagent
-sudo mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
 
@@ -47,7 +49,8 @@ sudo ./install.sh
 sudo zypper se -t pattern
 sudo zypper in -t pattern sap-hana
 
-# saptune profile options
+# SAPTUNE profile options
+
 # BOBJ.  Profile for servers hosting SAP BusinessObjects.
 # HANA.  Profile for servers hosting an SAP HANA database.
 # MAXDB.  Profile for servers hosting a MaxDB database.
