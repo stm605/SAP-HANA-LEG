@@ -228,7 +228,7 @@
               "fileUris": [
                 "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
               ],
-              "commandToExecute": "[concat('appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVHOST'), ' ', parameters('SecondaryStaticIP'))]"
+              "commandToExecute": "[concat('sh appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVHOST'), ' ', parameters('SecondaryStaticIP'))]"
             }
           },
           "dependsOn": [
