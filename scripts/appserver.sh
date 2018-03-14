@@ -3,8 +3,20 @@ HANAUSR=$2
 HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
-vmSize=$6
+HANAVHOST=$6
+SecondaryStaticIP=$7
+cidr=/24
+SecIP=$SecondaryStaticIP$cidr
 
+/usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
+
+cp /tmp/LaMaBits/resolv.conf /etc
+
+echo $HANAVHOST >> /tmp/vhost.txt
+echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
+echo $SecIP >> /tmp/SecIP.txt
+
+ip addr add $SecIP dev eth0 label eth0:1
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
@@ -14,6 +26,11 @@ sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /sapmnt
 sudo mkdir /usr/sap
+sudo mkdir /tmp/LaMaBits
+sudo mkdir /tmp/LaMaBits/hostagent
+sudo mkdir /tmp/LaMaBits/sapaext
+
+groupadd -g 1001 sapsys
 
 
 # Install .NET Core and AzCopy
@@ -29,7 +46,18 @@ sudo ./install.sh
 
 sudo zypper se -t pattern
 sudo zypper in -t pattern sap-hana
-sudo saptune solution apply HANA
+
+# saptune profile options
+# BOBJ.  Profile for servers hosting SAP BusinessObjects.
+# HANA.  Profile for servers hosting an SAP HANA database.
+# MAXDB.  Profile for servers hosting a MaxDB database.
+# NETWEAVER.  Profile for servers hosting an SAP NetWeaver application.
+# S4HANA-APPSERVER.  Profile for servers hosting an SAP S/4HANA application.
+# S4HANA-DBSERVER.  Profile for servers hosting the SAP HANA database of an SAP S/4HANA installation.
+# SAP-ASE.  Profile for servers hosting an SAP Adaptive Server Enterprise database (formerly Sybase Adaptive Server Enterprise).
+
+sudo saptune solution apply S4HANA-APPSERVER
+
 
 # step2
 echo $Uri >> /tmp/url.txt
@@ -44,6 +72,9 @@ touch /home/me.txt
 
 mv /home /home.new
 mkdir /home 
+/usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
 
 echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
@@ -72,3 +103,30 @@ echo "write to fstab end" >> /tmp/parameter.txt
 mv /home.new/* /home
 
 echo "It worked" >> /home/me.txt
+
+chmod -R 777 /tmp/LaMaBits
+
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+
+cd /tmp/LaMaBits/hostagent
+
+./saphostexec -install &> /tmp/hostageninst.txt
+
+echo  "sapadm:Lama1234567!" | chpasswd
+
+cd /tmp/LaMaBits/sapaext
+
+cp *.so /usr/sap/hostctrl/exe/
+
+mkdir /usr/sap/hostctrl/exe/operations.d
+cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+
+cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+
+cp sapacext /usr/sap/hostctrl/exe/
+
+cd /usr/sap/hostctrl/exe/
+
+chown root:sapsys sapacext
+chmod 750 sapacext

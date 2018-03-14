@@ -8,6 +8,12 @@
         "description": "VM Name"
       }
     },
+    "HANAVHOST": {
+      "type": "string",
+      "metadata": {
+        "description": "HANA Virtual Host Name"
+      }
+    },
     "customUri": {
       "type": "string",
       "metadata": {
@@ -222,7 +228,7 @@
               "fileUris": [
                 "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
               ],
-              "commandToExecute": "[concat('sh appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+              "commandToExecute": "[concat('appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVHOST'), ' ', parameters('SecondaryStaticIP'))]"
             }
           },
           "dependsOn": [
