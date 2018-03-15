@@ -105,6 +105,7 @@ cd /usr/sap/hostctrl/exe/
 chown root:sapsys sapacext
 chmod 750 sapacext
 
+/usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0
 
 echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
