@@ -7,19 +7,22 @@ HANAVHOST=$6
 SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
+adm=adm
+sidadm=$HANASID$$adm
 
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
-sudo zypper install -y unrar
-sudo zypper install -y krb5-client samba-winbind
-sudo zypper install -y saptune
-sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /sapmnt
-sudo mkdir /usr/sap
-sudo mkdir /tmp/LaMaBits
-sudo mkdir /tmp/LaMaBits/hostagent
-sudo mkdir /tmp/LaMaBits/sapaext
+zypper install -y glibc-2.22-51.6
+zypper install -y systemd-228-142.1
+zypper install -y unrar
+zypper install -y krb5-client samba-winbind
+zypper install -y saptune
+mkdir /etc/systemd/login.conf.d
+mkdir /home/$sidam
+mkdir /sapmnt/$HANASID
+mkdir /usr/sap/$HANASID
+mkdir /tmp/LaMaBits
+mkdir /tmp/LaMaBits/hostagent
+mkdir /tmp/LaMaBits/sapaext
 
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
@@ -28,19 +31,19 @@ cp /tmp/LaMaBits/resolv.conf /etc
 echo $HANAVHOST >> /tmp/vhost.txt
 echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 echo $SecIP >> /tmp/SecIP.txt
+echo $sidadm >> /tmp/sidadm.txt
 
-ip addr add $SecIP dev eth0 label eth0:1
-
+# ip addr add $SecIP dev eth0 label eth0:1
 
 groupadd -g 1001 sapsys
 
 
 # Install .NET Core and AzCopy
-sudo zypper install -y libunwind
-sudo zypper install -y libicu
+zypper install -y libunwind
+zypper install -y libicu
 curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848824
-sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-sudo ln -s /opt/dotnet/dotnet /usr/bin
+mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
+ln -s /opt/dotnet/dotnet /usr/bin
 
 wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
 tar -xf azcopy.tar.gz
@@ -71,41 +74,9 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
-touch /home/me.txt
-
-mv /home /home.new
-mkdir /home 
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
-
-echo "logicalvols start" >> /tmp/parameter.txt
-  sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
-  pvcreate sapmntvg $sapmntvglun 
-  vgcreate sapmntvg $sapmntvglun
-  lvcreate -l 50%VG -n usrsaplv sapmntvg
-  lvcreate -l 40%VG -n sapmntlv sapmntvg
-  lvcreate -l 10%VG -n homelv sapmntvg
-  mkfs.xfs /dev/sapmntvg/sapmntlv
-  mkfs.xfs /dev/sapmntvg/usrsaplv
-  mkfs.xfs /dev/sapmntvg/homelv
-echo "logicalvols end" >> /tmp/parameter.txt
-
-#!/bin/bash
-echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
-mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap
-mount -t xfs /dev/sapmntvg/homelv /home
-echo "mounthanashared end" >> /tmp/parameter.txt
-echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sapmntvg-homelv /home xfs defaults 0 0" >> /etc/fstab
-echo "write to fstab end" >> /tmp/parameter.txt
-
-mv /home.new/* /home
-
-echo "It worked" >> /home/me.txt
 
 chmod -R 777 /tmp/LaMaBits
 
@@ -133,5 +104,30 @@ cd /usr/sap/hostctrl/exe/
 
 chown root:sapsys sapacext
 chmod 750 sapacext
+
+
+echo "logicalvols start" >> /tmp/parameter.txt
+  sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
+  pvcreate sapmntvg $sapmntvglun 
+  vgcreate sapmntvg $sapmntvglun
+  lvcreate -l 50%VG -n usrsaplv sapmntvg
+  lvcreate -l 40%VG -n sapmntlv sapmntvg
+  lvcreate -l 10%VG -n homelv sapmntvg
+  mkfs.xfs /dev/sapmntvg/sapmntlv
+  mkfs.xfs /dev/sapmntvg/usrsaplv
+  mkfs.xfs /dev/sapmntvg/homelv
+echo "logicalvols end" >> /tmp/parameter.txt
+
+#!/bin/bash
+echo "mounthanashared start" >> /tmp/parameter.txt
+mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt/$HANASID
+mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/$HANASID
+mount -t xfs /dev/sapmntvg/homelv /home/$sidadm
+echo "mounthanashared end" >> /tmp/parameter.txt
+echo "write to fstab start" >> /tmp/parameter.txt
+echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-homelv /home/$sidadm xfs defaults 0 0" >> /etc/fstab
+echo "write to fstab end" >> /tmp/parameter.txt
 
 shutdown -r 1
