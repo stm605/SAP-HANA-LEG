@@ -8,7 +8,7 @@ SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
 sadm=adm
-sidadm=$HANASID$$sadm
+sidadm=$HANASID$sadm
 
 #install hana prereqs
 zypper install -y glibc-2.22-51.6
