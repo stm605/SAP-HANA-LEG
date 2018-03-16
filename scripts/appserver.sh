@@ -18,9 +18,12 @@ zypper install -y unrar
 zypper install -y krb5-client samba-winbind
 zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
-mkdir /home/$lsidam
-mkdir /sapmnt/$HANASID
-mkdir /usr/sap/$HANASID
+#mkdir /home/$lsidam
+#mkdir /sapmnt/$HANASID
+#mkdir /usr/sap/$HANASID
+mkdir /home
+mkdir /sapmnt
+mkdir /usr/sap
 mkdir /tmp/LaMaBits
 mkdir /tmp/LaMaBits/hostagent
 mkdir /tmp/LaMaBits/sapaext
@@ -119,14 +122,20 @@ echo "logicalvols end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt/$HANASID
-mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/$HANASID
-mount -t xfs /dev/sapmntvg/homelv /home/$sidadm
+#mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt/$HANASID
+#mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/$HANASID
+#mount -t xfs /dev/sapmntvg/homelv /home/$lsidadm
+mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
+mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/
+mount -t xfs /dev/sapmntvg/homelv /home/
 echo "mounthanashared end" >> /tmp/parameter.txt
 echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/$HANASID xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sapmntvg-homelv /home/$sidadm xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/$HANASID xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/sapmntvg-homelv /home/$lsidadm xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/ xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/ xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-homelv /home/ xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 shutdown -r 1
