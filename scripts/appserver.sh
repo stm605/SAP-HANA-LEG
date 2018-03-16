@@ -32,12 +32,9 @@ cp /tmp/LaMaBits/resolv.conf /etc
 echo $HANAVHOST >> /tmp/vhost.txt
 echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 echo $SecIP >> /tmp/SecIP.txt
-echo $sidadm >> /tmp/sidadm.txt
-
-# ip addr add $SecIP dev eth0 label eth0:1
+echo $lsidadm >> /tmp/lsidadm.txt
 
 groupadd -g 1001 sapsys
-
 
 # Install .NET Core and AzCopy
 zypper install -y libunwind
