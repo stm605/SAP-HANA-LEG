@@ -7,8 +7,8 @@ HANAVHOST=$6
 SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
-adm=adm
-sidadm=$HANASID$$adm
+sadm=adm
+sidadm=$HANASID$$sadm
 
 #install hana prereqs
 zypper install -y glibc-2.22-51.6
@@ -105,7 +105,7 @@ cd /usr/sap/hostctrl/exe/
 chown root:sapsys sapacext
 chmod 750 sapacext
 
-/usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0
+/usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
 
 echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
