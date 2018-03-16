@@ -9,6 +9,7 @@ cidr=/24
 SecIP=$SecondaryStaticIP$cidr
 sadm=adm
 sidadm=$HANASID$sadm
+lsidadm=${sidadm,,}
 
 #install hana prereqs
 zypper install -y glibc-2.22-51.6
@@ -17,7 +18,7 @@ zypper install -y unrar
 zypper install -y krb5-client samba-winbind
 zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
-mkdir /home/$sidam
+mkdir /home/$lsidam
 mkdir /sapmnt/$HANASID
 mkdir /usr/sap/$HANASID
 mkdir /tmp/LaMaBits
