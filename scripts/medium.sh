@@ -17,11 +17,11 @@ echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 echo $SecIP >> /tmp/SecIP.txt
 
 #install hana prereqs
-zypper install -y glibc-2.22-51.6
-zypper install -y systemd-228-142.1
-zypper install -y unrar
-zypper install -y krb5-client samba-winbind
-zypper install -y saptune
+sudo zypper install -y glibc-2.22-51.6
+sudo zypper install -y systemd-228-142.1
+sudo zypper install -y unrar
+sudo zypper install -y krb5-client samba-winbind
+sudo zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
 mkdir /hana
 mkdir /hana/data
@@ -37,8 +37,8 @@ mkdir /tmp/LaMaBits/sapaext
 groupadd -g 1001 sapsys
 
 # Install .NET Core and AzCopy
-zypper install -y libunwind
-zypper install -y libicu
+sudo zypper install -y libunwind
+sudo zypper install -y libicu
 curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848824
 mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
 sudo ln -s /opt/dotnet/dotnet /usr/bin
@@ -47,9 +47,9 @@ wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
 tar -xf azcopy.tar.gz
 sudo ./install.sh
 
-zypper se -t pattern
-zypper in -t pattern sap-hana
-saptune solution apply HANA
+sudo zypper se -t pattern
+sudo zypper in -t pattern sap-hana
+sudo saptune solution apply HANA
 
 # step2
 echo $Uri >> /tmp/url.txt
