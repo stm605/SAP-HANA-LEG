@@ -16,6 +16,10 @@ sudo mkdir /tmp/LaMaBits
 sudo mkdir /tmp/LaMaBits/hostagent
 sudo mkdir /tmp/LaMaBits/sapaext
 
+groupadd -g 1001 sapsys
+useradd -g 1001 sapadm
+useradd -g 1001 s42adm
+useradd -g 1001 s49adm
 
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
@@ -51,13 +55,24 @@ chmod -R 777 /tmp/LaMaBits
 cp /tmp/LaMaBits/resolv.conf /etc
 
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+#/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
 cd /tmp/LaMaBits/hostagent
 
 ./saphostexec -install &> /tmp/hostageninst.txt
 
-echo  "sapadm:Lama1234567!" | chpasswd
+cd /usr/sap/hostctrl/exe/
+
+rm SIGNATURE.SMF
+
+./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT.SAR &> /tmp/sapacextinst.txt
+
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacosprep_azr.so
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
+
+
+#echo  "sapadm:Lama1234567!" | chpasswd
+
 
 #cd /tmp/LaMaBits/sapaext
 
