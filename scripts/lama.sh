@@ -59,18 +59,18 @@ cd /tmp/LaMaBits/hostagent
 
 echo  "sapadm:Lama1234567!" | chpasswd
 
-cd /tmp/LaMaBits/sapaext
+#cd /tmp/LaMaBits/sapaext
 
-cp *.so /usr/sap/hostctrl/exe/
+#cp *.so /usr/sap/hostctrl/exe/
 
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+#mkdir /usr/sap/hostctrl/exe/operations.d
+#cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
 
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+#cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
 
-cp sapacext /usr/sap/hostctrl/exe/
+#cp sapacext /usr/sap/hostctrl/exe/
 
-cd /usr/sap/hostctrl/exe/
+#cd /usr/sap/hostctrl/exe/
 
-chown root:sapsys sapacext
-chmod 750 sapacext
+#chown root:sapsys sapacext
+#chmod 750 sapacext

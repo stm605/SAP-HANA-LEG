@@ -64,7 +64,6 @@ sudo zypper in -t pattern sap-hana
 
 sudo saptune solution apply S4HANA-APPSERVER
 
-
 # step2
 echo $Uri >> /tmp/url.txt
 
