@@ -17,9 +17,9 @@ sudo mkdir /tmp/LaMaBits/hostagent
 sudo mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
-useradd -g 1001 sapadm
-useradd -g 1001 s42adm
-useradd -g 1001 s49adm
+useradd -g 1001 -u 488 -s /bin/false sapadm
+useradd -g 1001 -u 1001 -s /bin/csh s42adm
+useradd -g 1001 -u 1005 -s /bin/sh -M s49adm 
 
 
 # Install .NET Core and AzCopy
