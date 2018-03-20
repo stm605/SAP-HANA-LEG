@@ -21,6 +21,7 @@ useradd -g 1001 sapadm
 useradd -g 1001 s42adm
 useradd -g 1001 s49adm
 
+
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
 sudo zypper install -y libicu
@@ -61,6 +62,8 @@ cd /tmp/LaMaBits/hostagent
 
 ./saphostexec -install &> /tmp/hostageninst.txt
 
+echo  "sapadm:Lama1234567!" | chpasswd
+
 cd /usr/sap/hostctrl/exe/
 
 rm SIGNATURE.SMF
@@ -71,7 +74,7 @@ rm SIGNATURE.SMF
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
 
 
-#echo  "sapadm:Lama1234567!" | chpasswd
+
 
 
 #cd /tmp/LaMaBits/sapaext
