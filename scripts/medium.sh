@@ -35,6 +35,7 @@ mkdir /tmp/LaMaBits/hostagent
 mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
+useradd -g 1001 -u 488 -s /bin/false sapadm
 
 # Install .NET Core and AzCopy
 sudo zypper install -y libunwind
@@ -75,21 +76,15 @@ cd /tmp/LaMaBits/hostagent
 
 echo  "sapadm:Lama1234567!" | chpasswd
 
-cd /tmp/LaMaBits/sapaext
-
-cp *.so /usr/sap/hostctrl/exe/
-
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
-
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
-
-cp sapacext /usr/sap/hostctrl/exe/
-
 cd /usr/sap/hostctrl/exe/
 
-chown root:sapsys sapacext
-chmod 750 sapacext
+rm SIGNATURE.SMF
+
+./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT.SAR &> /tmp/sapacextinst.txt
+
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacosprep_azr.so
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
+
 
 /usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
 
@@ -187,7 +182,7 @@ echo "hana preapre end" >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+#/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1

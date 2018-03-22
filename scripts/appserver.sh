@@ -37,6 +37,7 @@ echo $SecIP >> /tmp/SecIP.txt
 echo $lsidadm >> /tmp/lsidadm.txt
 
 groupadd -g 1001 sapsys
+useradd -g 1001 -u 488 -s /bin/false sapadm
 
 # Install .NET Core and AzCopy
 zypper install -y libunwind
@@ -88,21 +89,14 @@ cd /tmp/LaMaBits/hostagent
 
 echo  "sapadm:Lama1234567!" | chpasswd
 
-cd /tmp/LaMaBits/sapaext
-
-cp *.so /usr/sap/hostctrl/exe/
-
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
-
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
-
-cp sapacext /usr/sap/hostctrl/exe/
-
 cd /usr/sap/hostctrl/exe/
 
-chown root:sapsys sapacext
-chmod 750 sapacext
+rm SIGNATURE.SMF
+
+./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT.SAR &> /tmp/sapacextinst.txt
+
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacosprep_azr.so
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
 
 /usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
 
@@ -123,17 +117,11 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt/$HANASID
 mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/$HANASID
 mount -t xfs /dev/sapmntvg/homelv /home/$lsidadm
-#mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt
-#mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/
-#mount -t xfs /dev/sapmntvg/homelv /home/
 echo "mounthanashared end" >> /tmp/parameter.txt
 echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sapmntvg-homelv /home/$lsidadm xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/ xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/ xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/sapmntvg-homelv /home/ xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 shutdown -r 1
