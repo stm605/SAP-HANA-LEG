@@ -136,16 +136,6 @@
                 "id": "[variables('subnetRef')]"
               }
             }
-          },
-          {
-            "name": "Secondary",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('SecondaryStaticIP')]",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
           }
         ]
       }
