@@ -7,6 +7,9 @@ HANAVHOST=$6
 SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
+sadm=adm
+sidadm=$HANASID$sadm
+lsidadm=${sidadm,,}
 
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
@@ -23,16 +26,8 @@ sudo zypper install -y unrar
 sudo zypper install -y krb5-client samba-winbind
 sudo zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
-mkdir /hana
-mkdir /hana/data
-mkdir /hana/log
-mkdir /hana/shared
-mkdir /hana/backup
-mkdir /usr/sap
-mkdir /usr/sap/$HANASID
-mkdir /tmp/LaMaBits
-mkdir /tmp/LaMaBits/hostagent
-mkdir /tmp/LaMaBits/sapaext
+mkdir -p /tmp/LaMaBits/hostagent
+mkdir -p /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
@@ -94,10 +89,10 @@ echo "logicalvols start" >> /tmp/parameter.txt
   hanavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
   pvcreate hanavg $hanavg1lun $hanavg2lun
   vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
+  lvcreate -l 80%FREE -n datalv$HANASID hanavg
+  lvcreate -l 20%VG -n loglv$HANASID hanavg
+  mkfs.xfs /dev/hanavg/datalv$HANASID
+  mkfs.xfs /dev/hanavg/loglv$HANASID
 echo "logicalvols end" >> /tmp/parameter.txt
 
 
@@ -111,32 +106,72 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
   vgcreate backupvg $backupvglun1 $backupvglun2
   vgcreate sharedvg $sharedvglun
   vgcreate usrsapvg $usrsapvglun 
-  lvcreate -l 100%FREE -n sharedlv sharedvg 
-  lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%VG -n usrsaplv usrsapvg
-  mkfs -t xfs /dev/sharedvg/sharedlv 
-  mkfs -t xfs /dev/backupvg/backuplv 
-  mkfs -t xfs /dev/usrsapvg/usrsaplv
+  lvcreate -l 100%FREE -n sharedlv$HANASID sharedvg 
+  lvcreate -l 100%FREE -n backuplv$HANASID backupvg 
+  lvcreate -l 100%VG -n usrsaplv$HANASID usrsapvg
+  mkfs -t xfs /dev/sharedvg/sharedlv$HANASID 
+  mkfs -t xfs /dev/backupvg/backuplv$HANASID 
+  mkfs -t xfs /dev/usrsapvg/usrsaplv$HANASID
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
+mkdir -p /tmp/work
+
+mount /dev/sharedvg/sharedlv$HANASID /tmp/work
+mkdir -p /tmp/work/hana/shared/$HANASID
+chown $lsidadm:sapsys /tmp/work/hana/shared/$HANASID
+umount /tmp/work
+
+mount /dev/sharedvg/backup$HANASID /tmp/work
+mkdir -p /tmp/work/hana/backup/$HANASID
+chown $lsidadm:sapsys /tmp/work/hana/backup/$HANASID
+umount /tmp/work
+
+mount /dev/sharedvg/usrsaplv$HANASID /tmp/work
+mkdir -p /tmp/work/usr/sap/$HANASID
+chown $lsidadm:sapsys /tmp/work/usr/sap/$HANASID
+umount /tmp/work
+
+mount /dev/sharedvg/data$HANASID /tmp/work
+mkdir -p /tmp/work/hana/data/$HANASID
+chown $lsidadm:sapsys /tmp/work/hana/data/$HANASID
+umount /tmp/work
+
+mount /dev/sharedvg/log$HANASID /tmp/work
+mkdir -p /tmp/work/hana/log/$HANASID
+chown $lsidadm:sapsys /tmp/work/hana/log/$HANASID
+umount /tmp/work
+
+rm -rf /tmp/work
+
+mkdir -p /hana/data/$HANASID
+mkdir -p /hana/log/$HANASID
+mkdir -p /hana/shared/$HANASID
+mkdir -p /hana/backup/$HANASID
+mkdir -p /usr/sap/$HANASID
+
+mount /dev/sharedvg/data$HANASID /hana/shared/$HANASID
+mount /dev/sharedvg/log$HANASID /hana/log/$HANASID
+mount /dev/sharedvg/sharedlv$HANASID /hana/shared/$HANASID
+mount /dev/sharedvg/backup$HANASID /hana/backup/$HANASID
+mount /dev/sharedvg/usrsaplv$HANASID /usr/sap/$HANASID
 
 #!/bin/bash
-echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sharedvg/sharedlv /hana/shared
-mount -t xfs /dev/backupvg/backuplv /hana/backup 
-mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap/$HANASID
-mount -t xfs /dev/hanavg/datalv /hana/data
-mount -t xfs /dev/hanavg/loglv /hana/log 
-mkdir /hana/data/sapbits
-echo "mounthanashared end" >> /tmp/parameter.txt
+#echo "mounthanashared start" >> /tmp/parameter.txt
+#mount -t xfs /dev/sharedvg/sharedlv /hana/shared
+#mount -t xfs /dev/backupvg/backuplv /hana/backup 
+#mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap/$HANASID
+#mount -t xfs /dev/hanavg/datalv /hana/data
+#mount -t xfs /dev/hanavg/loglv /hana/log 
+#mkdir /hana/data/sapbits
+#echo "mounthanashared end" >> /tmp/parameter.txt
 
-echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
-echo "write to fstab end" >> /tmp/parameter.txt
+#echo "write to fstab start" >> /tmp/parameter.txt
+#echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
+#echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
+#echo "write to fstab end" >> /tmp/parameter.txt
 
 
 if [ ! -d "/hana/data/sapbits" ]
@@ -182,7 +217,7 @@ echo "hana preapre end" >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-#/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
-shutdown -r 1
+#shutdown -r 1
