@@ -86,7 +86,7 @@ rm SIGNATURE.SMF
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacosprep_azr.so
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
 
-echo "acosprep/sapifconfig=1" >> /usr/sap/hostctrl/exe/host_profile
+echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
 /usr/sap/hostctrl/exe/saphostexec -restart
 
 /usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
