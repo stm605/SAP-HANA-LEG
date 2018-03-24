@@ -75,22 +75,5 @@ rm SIGNATURE.SMF
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacosprep_azr.so
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT.SAR libsapacext_lvm.so
 
-
-
-
-
-#cd /tmp/LaMaBits/sapaext
-
-#cp *.so /usr/sap/hostctrl/exe/
-
-#mkdir /usr/sap/hostctrl/exe/operations.d
-#cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
-
-#cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
-
-#cp sapacext /usr/sap/hostctrl/exe/
-
-#cd /usr/sap/hostctrl/exe/
-
-#chown root:sapsys sapacext
-#chmod 750 sapacext
+echo "acosprep/sapifconfig=1" >> /usr/sap/hostctrl/exe/host_profile
+/usr/sap/hostctrl/exe/saphostexec -restart
