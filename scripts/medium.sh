@@ -28,6 +28,12 @@ sudo zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
 mkdir -p /tmp/LaMaBits/hostagent
 mkdir -p /tmp/LaMaBits/sapaext
+mkdir -p /hana/data/$HANASID
+mkdir -p /hana/log/$HANASID
+mkdir -p /hana/shared/$HANASID
+mkdir -p /hana/backup/$HANASID
+mkdir -p /usr/sap/$HANASID
+
 
 groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
@@ -114,65 +120,33 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
   mkfs -t xfs /dev/usrsapvg/usrsaplv$HANASID
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
-mkdir -p /tmp/work
-
-mount /dev/sharedvg/sharedlv$HANASID /tmp/work
-mkdir -p /tmp/work/hana/shared/$HANASID
-chown $lsidadm:sapsys /tmp/work/hana/shared/$HANASID
-umount /tmp/work
-
-mount /dev/sharedvg/backup$HANASID /tmp/work
-mkdir -p /tmp/work/hana/backup/$HANASID
-chown $lsidadm:sapsys /tmp/work/hana/backup/$HANASID
-umount /tmp/work
-
-mount /dev/sharedvg/usrsaplv$HANASID /tmp/work
-mkdir -p /tmp/work/usr/sap/$HANASID
-chown $lsidadm:sapsys /tmp/work/usr/sap/$HANASID
-umount /tmp/work
-
-mount /dev/sharedvg/data$HANASID /tmp/work
-mkdir -p /tmp/work/hana/data/$HANASID
-chown $lsidadm:sapsys /tmp/work/hana/data/$HANASID
-umount /tmp/work
-
-mount /dev/sharedvg/log$HANASID /tmp/work
-mkdir -p /tmp/work/hana/log/$HANASID
-chown $lsidadm:sapsys /tmp/work/hana/log/$HANASID
-umount /tmp/work
-
-rm -rf /tmp/work
-
-mkdir -p /hana/data/$HANASID
-mkdir -p /hana/log/$HANASID
-mkdir -p /hana/shared/$HANASID
-mkdir -p /hana/backup/$HANASID
-mkdir -p /usr/sap/$HANASID
-
-mount /dev/sharedvg/data$HANASID /hana/shared/$HANASID
-mount /dev/sharedvg/log$HANASID /hana/log/$HANASID
-mount /dev/sharedvg/sharedlv$HANASID /hana/shared/$HANASID
-mount /dev/sharedvg/backup$HANASID /hana/backup/$HANASID
-mount /dev/sharedvg/usrsaplv$HANASID /usr/sap/$HANASID
-
 #!/bin/bash
 #echo "mounthanashared start" >> /tmp/parameter.txt
+mount -t xfs /dev/sharedvg/data$HANASID /hana/shared/$HANASID
+mount -t xfs /dev/sharedvg/log$HANASID /hana/log/$HANASID
+mount -t xfs /dev/sharedvg/sharedlv$HANASID /hana/shared/$HANASID
+mount -t xfs /dev/sharedvg/backup$HANASID /hana/backup/$HANASID
+mount -t xfs /dev/sharedvg/usrsaplv$HANASID /usr/sap/$HANASID
+#echo "mounthanashared end" >> /tmp/parameter.txt
+chown $lsidadm:sapsys /hana/shared/$HANASID
+chown $lsidadm:sapsys /hana/backup/$HANASID
+chown $lsidadm:sapsys /usr/sap/$HANASID
+chown $lsidadm:sapsys /hana/data/$HANASID
+chown $lsidadm:sapsys /hana/log/$HANASID
+
 #mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 #mount -t xfs /dev/backupvg/backuplv /hana/backup 
 #mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap/$HANASID
 #mount -t xfs /dev/hanavg/datalv /hana/data
 #mount -t xfs /dev/hanavg/loglv /hana/log 
-#mkdir /hana/data/sapbits
-#echo "mounthanashared end" >> /tmp/parameter.txt
 
 #echo "write to fstab start" >> /tmp/parameter.txt
-#echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
-#echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanavg-datalv$HANASID /hana/data/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanavg-loglv$HANASID /hana/log/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sharedvg-sharedlv$HANASID /hana/shared/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/backupvg-backuplv$HANASID /hana/backup/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/usrsapvg-usrsaplv$HANASID /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
 #echo "write to fstab end" >> /tmp/parameter.txt
-
 
 if [ ! -d "/hana/data/sapbits" ]
  then
@@ -220,4 +194,4 @@ cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
-#shutdown -r 1
+shutdown -r 1
