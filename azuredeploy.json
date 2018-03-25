@@ -126,7 +126,7 @@
       "metadata": {
         "description": "Operating system for HANA Machine"
       },
-      "defaultValue": "2018.02.22",
+      "defaultValue": "latest",
       "allowedValues": [
         "latest",
         "2018.02.22",
