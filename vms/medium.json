@@ -130,7 +130,8 @@
             "name": "[concat(parameters('vmName'),'-static')]",
             "location": "[resourceGroup().location]",
             "properties": {
-            "ipConfigurations": [{
+              "ipConfigurations": [
+            {
               "name": "Primary",
               "properties": {
                 "primary": true,
@@ -140,7 +141,18 @@
                   "id": "[variables('subnetRef')]"
                 }
               }
-            }]
+            },
+                {
+                  "name": "Secondary",
+                  "properties": {
+                    "privateIPAllocationMethod": "Static",
+                    "privateIPAddress": "[parameters('SecondaryStaticIP')]",
+                    "subnet": {
+                      "id": "[variables('subnetRef')]"
+                    }
+                  }
+                }
+          ]
             }
           },
         {
