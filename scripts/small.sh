@@ -7,6 +7,9 @@ HANAVHOST=$6
 SecondaryStaticIP=$7
 cidr=/24
 SecIP=$SecondaryStaticIP$cidr
+sadm=adm
+sidadm=$HANASID$sadm
+lsidadm=${sidadm,,}
 
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
@@ -25,16 +28,14 @@ sudo zypper install -y unrar
 sudo zypper install -y krb5-client samba-winbind
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /hana
-sudo mkdir /hana/data
-sudo mkdir /hana/log
-sudo mkdir /hana/shared
-sudo mkdir /hana/backup
-sudo mkdir /usr/sap
+mkdir -p /tmp/LaMaBits/hostagent
+mkdir -p /tmp/LaMaBits/sapaext
+mkdir -p /hana/data/$HANASID
+mkdir -p /hana/log/$HANASID
+mkdir -p /hana/shared/$HANASID
+mkdir -p /hana/backup/$HANASID
+mkdir -p /usr/sap/$HANASID
 sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /tmp/LaMaBits
-sudo mkdir /tmp/LaMaBits/hostagent
-sudo mkdir /tmp/LaMaBits/sapaext
 
 groupadd -g 1001 sapsys
 
@@ -69,8 +70,8 @@ mv /home /home.new
 mkdir /home 
 
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT.SAR -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT_39-20010403.SAR -P /tmp/LaMaBits
 
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
@@ -80,10 +81,10 @@ echo "logicalvols start" >> /tmp/parameter.txt
   hanavg2lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
   pvcreate $hanavg1lun $hanavg2lun
   vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%VG -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
+  lvcreate -l 80%VG -n datalv$HANASID hanavg
+  lvcreate -l 20%VG -n loglv$HANASID hanavg
+  mkfs.xfs /dev/hanavg/datalv$HANASID
+  mkfs.xfs /dev/hanavg/loglv$HANASID
 echo "logicalvols end" >> /tmp/parameter.txt
 
 
@@ -96,35 +97,31 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
   vgcreate backupvg $backupvglun
   vgcreate sharedvg $sharedvglun
   vgcreate usrsapvg $usrsapvglun 
-  lvcreate -l 100%FREE -n sharedlv sharedvg 
-  lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 97%VG -n usrsaplv usrsapvg
-  lvcreate -l 3%VG -n homelv usrsapvg
-  mkfs -t xfs /dev/sharedvg/sharedlv 
-  mkfs -t xfs /dev/backupvg/backuplv 
-  mkfs -t xfs /dev/usrsapvg/usrsaplv
-  mkfs -t xfs /dev/usrsapvg/homelv
+  lvcreate -l 100%FREE -n sharedlv$HANASID sharedvg 
+  lvcreate -l 100%FREE -n backuplv$HANASID backupvg 
+  lvcreate -l 100%VG -n usrsaplv$HANASID usrsapvg
+  mkfs -t xfs /dev/sharedvg/sharedlv$HANASID 
+  mkfs -t xfs /dev/backupvg/backuplv$HANASID 
+  mkfs -t xfs /dev/usrsapvg/usrsaplv$HANASID
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
 
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sharedvg/sharedlv /hana/shared
-mount -t xfs /dev/backupvg/backuplv /hana/backup 
-mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
-mount -t xfs /dev/usrsapvg/homelv /home
-mount -t xfs /dev/hanavg/datalv /hana/data
-mount -t xfs /dev/hanavg/loglv /hana/log 
+mount -t xfs /dev/sharedvg/sharedlv$HANASID /hana/shared/$HANASID
+mount -t xfs /dev/backupvg/backuplv$HANASID /hana/backup/$HANASID
+mount -t xfs /dev/usrsapvg/usrsaplv$HANASID /usr/sap/$HANASID
+mount -t xfs /dev/hanavg/datalv$HANASID /hana/data/$HANASID
+mount -t xfs /dev/hanavg/loglv$HANASID /hana/log/$HANASID 
 mkdir /hana/data/sapbits
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/usrsapvg-homelv /home xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanavg-datalv$HANASID /hana/data/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanavg-loglv$HANASID /hana/log/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sharedvg-sharedlv$HANASID /hana/shared/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/backupvg-backuplv$HANASID /hana/backup/$HANASID xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/usrsapvg-usrsaplv$HANASID /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 mv /home.new/* /home
@@ -133,8 +130,8 @@ echo "It worked" >> /home/me.txt
 
 chmod -R 777 /tmp/LaMaBits
 
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
 cd /tmp/LaMaBits/hostagent
 
@@ -144,27 +141,20 @@ echo  "sapadm:Lama1234567!" | chpasswd
 
 cd /tmp/LaMaBits/sapaext
 
-cp *.so /usr/sap/hostctrl/exe/
+rm SIGNATURE.SMF
 
-mkdir /usr/sap/hostctrl/exe/operations.d
-cp operations.d/*.conf /usr/sap/hostctrl/exe/operations.d/
+./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT_39-20010403.SAR &> /tmp/sapacextinst.txt
 
-cp SIGNATURE.SMF /usr/sap/hostctrl/exe/SAPACEXT.SMF
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacosprep_azr.so
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacext_lvm.so
 
-cp sapacext /usr/sap/hostctrl/exe/
-
-cd /usr/sap/hostctrl/exe/
-
-chown root:sapsys sapacext
-chmod 750 sapacext
-
+echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
+/usr/sap/hostctrl/exe/saphostexec -restart
 
 if [ ! -d "/hana/data/sapbits" ]
  then
  mkdir "/hana/data/sapbits"
 fi
-
-
 
 #!/bin/bash
 cd /hana/data/sapbits
@@ -204,7 +194,7 @@ echo "hana preapre end" >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+#/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
