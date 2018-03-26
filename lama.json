@@ -106,6 +106,24 @@
         "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
       },
       "defaultValue": "10.1.5.0"
+    },
+    "SecondaryStaticIP": {
+      "type": "string",
+      "metadata": {
+        "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
+      },
+      "defaultValue": "10.1.5.0"
+    },
+    "enableSecondaryIp": {
+      "type": "string",
+      "metadata": {
+        "description": "Selection if one or two IP addresses are assigned"
+      },
+      "defaultValue": "yes",
+      "allowedValues": [
+        "yes",
+        "no"
+      ]
     }
   },
   "variables": {
@@ -114,7 +132,7 @@
     "vmPassword": "HANA07061992!",
     "mode": "Push",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
-    "nicName": "[concat(parameters('vmName'),'-nosecondaryip')]",
+    "nicName": "[if(equals(parameters('enableSecondaryIp'),'yes'),concat(parameters('vmName'),'-secondaryip'),concat(parameters('vmName'),'-nosecondaryip'))]",
     "subnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "OperatingSystemSpec": {
       "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
@@ -124,6 +142,39 @@
   },
   "resources": [
     {
+      "condition":"[equals(parameters('enableSecondaryIp'), 'yes')]",
+      "apiVersion": "[variables('api-version')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('vmName'),'-secondaryip')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "Primary",
+            "properties": {
+              "primary": true,
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('PrimaryStaticIP')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          },
+          {
+            "name": "Secondary",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('SecondaryStaticIP')]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+        "condition":"[equals(parameters('enableSecondaryIp'), 'no')]",
         "apiVersion": "[variables('api-version')]",
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[concat(parameters('vmName'),'-nosecondaryip')]",
