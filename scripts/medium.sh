@@ -148,13 +148,13 @@ echo "/dev/mapper/backupvg-backuplv$HANASID /hana/backup/$HANASID xfs defaults 0
 echo "/dev/mapper/usrsapvg-usrsaplv$HANASID /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
 #echo "write to fstab end" >> /tmp/parameter.txt
 
-if [ ! -d "/hana/data/sapbits" ]
+if [ ! -d "/hana/data/$HANASID/sapbits" ]
  then
- mkdir "/hana/data/sapbits"
+ mkdir "/hana/data/$HANASID/sapbits"
 fi
 
 #!/bin/bash
-cd /hana/data/sapbits
+cd /hana/data/$HANASID/sapbits
 echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/md5sums
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part1.exe
@@ -165,27 +165,28 @@ echo "hana download start" >> /tmp/parameter.txt
 echo "hana download end" >> /tmp/parameter.txt
 
 date >> /tmp/testdate
-cd /hana/data/sapbits
+cd /hana/data/$HANASID/sapbits
 
 echo "hana unrar start" >> /tmp/parameter.txt
 #!/bin/bash
-cd /hana/data/sapbits
+cd /hana/data/$HANASID/sapbits
 unrar x 51052325_part1.exe
 echo "hana unrar end" >> /tmp/parameter.txt
 
 echo "hana prepare start" >> /tmp/parameter.txt
-cd /hana/data/sapbits
+cd /hana/data/$HANASID/sapbits
 
 #!/bin/bash
-cd /hana/data/sapbits
+cd /hana/data/$HANASID/sapbits
 myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$HANAVHOST/g"
-sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
+#sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/AweS0me@PW/$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
-cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+#cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+cat hdbinst.cfg | sed $sedcmd | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 echo "hana preapre end" >> /tmp/parameter.txt
 
 #/usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
@@ -193,8 +194,8 @@ echo "hana preapre end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-#/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+cd /hana/data/$HANASID/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/$HANASID/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/$HANASID/sapbits/hdbinst-local.cfg --component_medium=/hana/data/$HANASID/sapbits/51052325
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
