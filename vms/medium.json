@@ -282,7 +282,8 @@
                     "version": "[parameters('OperatingSystemVersion')]"
                   },
                     "osDisk": {
-                        "createOption": "FromImage"
+                        "createOption": "FromImage",
+                        "diskSizeGB": "250"
                     },
                     "dataDisks": [{
                         "lun": 0,
