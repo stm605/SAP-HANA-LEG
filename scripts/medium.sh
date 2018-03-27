@@ -33,6 +33,7 @@ mkdir -p /hana/log/$HANASID
 mkdir -p /hana/shared/$HANASID
 mkdir -p /hana/backup/$HANASID
 mkdir -p /usr/sap/$HANASID
+mkdir -p /sapcds
 
 
 groupadd -g 1001 sapsys
