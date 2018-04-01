@@ -135,12 +135,6 @@ chown $lsidadm:sapsys /usr/sap/$HANASID
 chown $lsidadm:sapsys /hana/data/$HANASID
 chown $lsidadm:sapsys /hana/log/$HANASID
 
-#mount -t xfs /dev/sharedvg/sharedlv /hana/shared
-#mount -t xfs /dev/backupvg/backuplv /hana/backup 
-#mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap/$HANASID
-#mount -t xfs /dev/hanavg/datalv /hana/data
-#mount -t xfs /dev/hanavg/loglv /hana/log 
-
 #echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/mapper/hanavg-datalv$HANASID /hana/data/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/hanavg-loglv$HANASID /hana/log/$HANASID xfs defaults 0 0" >> /etc/fstab

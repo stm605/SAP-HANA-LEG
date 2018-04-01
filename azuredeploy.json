@@ -107,7 +107,7 @@
       "type": "string",
       "defaultValue": "ra-sap-hana-vnet",
       "metadata": {
-        "description": "The HANA VNET"
+        "description": "The HANA  VNET"
       }
     },
     "OperatingSystem": {

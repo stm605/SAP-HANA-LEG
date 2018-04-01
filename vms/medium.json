@@ -52,7 +52,7 @@
       "metadata": {
         "description": "Password for the Virtual Machine"
       },
-      "defaultValue": "Hana07061992!"
+      "defaultValue": "Hana07061922!"
     },
     "hanaSid": {
       "type": "string",
