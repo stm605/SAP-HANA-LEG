@@ -40,6 +40,17 @@ sudo zypper se -t pattern
 sudo zypper in -t pattern sap-hana
 # sudo saptune solution apply HANA
 
+# SAPTUNE profile options
+
+# BOBJ.  Profile for servers hosting SAP BusinessObjects.
+# HANA.  Profile for servers hosting an SAP HANA database.
+# MAXDB.  Profile for servers hosting a MaxDB database.
+# NETWEAVER.  Profile for servers hosting an SAP NetWeaver application.
+# S4HANA-APPSERVER.  Profile for servers hosting an SAP S/4HANA application.
+# S4HANA-DBSERVER.  Profile for servers hosting the SAP HANA database of an SAP S/4HANA installation.
+# SAP-ASE.  Profile for servers hosting an SAP Adaptive Server Enterprise database (formerly Sybase Adaptive Server Enterprise).
+
+
 # step2
 echo $Uri >> /tmp/url.txt
 
@@ -50,7 +61,7 @@ cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT_39-20010403.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/resolv.conf -P /tmp/LaMaBits
 
@@ -58,7 +69,7 @@ chmod -R 777 /tmp/LaMaBits
 
 cp /tmp/LaMaBits/resolv.conf /etc
 
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
 cd /tmp/LaMaBits/hostagent
