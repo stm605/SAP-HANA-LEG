@@ -245,7 +245,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/lama.sh"
+                "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/scripts/lama.sh"
               ],
               "commandToExecute": "[concat('sh lama.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'))]"
             }

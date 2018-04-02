@@ -230,7 +230,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
+                "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/scripts/appserver.sh"
               ],
               "commandToExecute": "[concat('sh appserver.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
             }

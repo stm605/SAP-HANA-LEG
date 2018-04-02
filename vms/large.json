@@ -376,7 +376,7 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "fileUris": [
-                        "https://raw.github.com/stm605/SAP-HANA-LEG/master/scripts/large.sh"
+                        "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/scripts/large.sh"
                       ],
                         "commandToExecute": "[concat('sh large.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
                     }

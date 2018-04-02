@@ -16,7 +16,7 @@
 ## Related
 
 * https://app.asana.com/0/215934242492110/215134730711638
-* https://github.com/example/repo/pulls/232
+* https://githubusercontent.com/example/repo/pulls/232
 
 ## TODO
 - [x] something that was recently finished
