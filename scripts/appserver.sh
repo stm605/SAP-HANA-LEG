@@ -20,6 +20,7 @@ zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
 mkdir /sapmnt
 mkdir /usr/sap
+mkdir /usr/sap/trans
 mkdir /home/$lsidam
 mkdir /sapmnt/$HANASID
 mkdir /usr/sap/$HANASID
@@ -38,6 +39,7 @@ echo $lsidadm >> /tmp/lsidadm.txt
 
 groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
+useradd -g 1001 -u 1010 -s /bin/csh s41adm
 
 # Install .NET Core and AzCopy
 zypper install -y libunwind
@@ -75,12 +77,12 @@ cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT_39-20010403.SAR -P /tmp/LaMaBits
 
 chmod -R 777 /tmp/LaMaBits
 
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
 cd /tmp/LaMaBits/hostagent
@@ -107,12 +109,14 @@ echo "logicalvols start" >> /tmp/parameter.txt
   sapmntvglun="$(lsscsi 5 0 0 0 | grep -o '.\{9\}$')"  
   pvcreate sapmntvg $sapmntvglun 
   vgcreate sapmntvg $sapmntvglun
-  lvcreate -l 50%VG -n usrsaplv sapmntvg
+  lvcreate -l 20%VG -n usrsaplv sapmntvg
   lvcreate -l 40%VG -n sapmntlv sapmntvg
   lvcreate -l 10%VG -n homelv sapmntvg
+  lvcreate -l 30%VG -n usrsaptranslv sapmntvg
   mkfs.xfs /dev/sapmntvg/sapmntlv
   mkfs.xfs /dev/sapmntvg/usrsaplv
   mkfs.xfs /dev/sapmntvg/homelv
+  mkfs.xfs /dev/sapmntvg/usrsaptranslv
 echo "logicalvols end" >> /tmp/parameter.txt
 
 #!/bin/bash
@@ -120,11 +124,14 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sapmntvg/sapmntlv /sapmnt/$HANASID
 mount -t xfs /dev/sapmntvg/usrsaplv /usr/sap/$HANASID
 mount -t xfs /dev/sapmntvg/homelv /home/$lsidadm
+mount -t xfs /dev/sapmntvg/usrsaptranslv /usr/sap/trans
+
 echo "mounthanashared end" >> /tmp/parameter.txt
 echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/mapper/sapmntvg-sapmntlv /sapmnt/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sapmntvg-usrsaplv /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sapmntvg-homelv /home/$lsidadm xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/sapmntvg-usrsaptranslv /usr/sap/trans xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 shutdown -r 1
