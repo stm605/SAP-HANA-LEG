@@ -88,4 +88,8 @@ rm SIGNATURE.SMF
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacext_lvm.so
 
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
+echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
 /usr/sap/hostctrl/exe/saphostexec -restart
+
+systemctl enable nfsserver
+systemctl restart nfsserver
