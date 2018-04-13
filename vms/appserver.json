@@ -152,7 +152,7 @@
     },
     {
       "type": "Microsoft.Compute/disks",
-      "name": "[concat(parameters('vmName'),'-shared')]",
+      "name": "[concat(parameters('HANAVHOST'),'-shared')]",
       "apiVersion": "[variables('api-version-vm')]",
       "location": "[resourceGroup().location]",
       "sku": {
@@ -176,7 +176,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[parameters('vmName')]",
+          "computerName": "[parameters('HANAVHOST')]",
           "adminUsername": "[parameters('vmUserName')]",
           "adminPassword": "[parameters('vmPassword')]"
         },
@@ -195,7 +195,7 @@
               "lun": 0,
               "createOption": "Attach",
               "managedDisk": {
-                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-shared'))]"
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('HANAVHOST'),'-shared'))]"
               }
             }
           ]
@@ -210,7 +210,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
-        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-shared'))]"
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('HANAVHOST'),'-shared'))]"
       ]
       ,
       "resources": [
