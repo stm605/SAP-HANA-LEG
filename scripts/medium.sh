@@ -20,10 +20,14 @@ echo $SecondaryStaticIP >> /tmp/SecondaryStaticIP.txt
 echo $SecIP >> /tmp/SecIP.txt
 
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
+#sudo zypper install -y glibc-2.22-51.6
+#sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
 sudo zypper install -y krb5-client samba-winbind
+sudo zypper install sapconf
+sudo tuned-adm profile sap-hana
+sudo systemctl start tuned
+sudo systemctl enable tuned
 sudo zypper install -y saptune
 mkdir /etc/systemd/login.conf.d
 mkdir -p /tmp/LaMaBits/hostagent
@@ -64,7 +68,7 @@ cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 /usr/bin/wget --quiet $Uri/LaMaBits/SC -P /tmp/LaMaBits
-/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -P /tmp/LaMaBits
+/usr/bin/wget --quiet $Uri/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -P /tmp/LaMaBits
 /usr/bin/wget --quiet $Uri/LaMaBits/SAPACEXT_39-20010403.SAR -P /tmp/LaMaBits
 
 chmod -R 777 /tmp/LaMaBits
