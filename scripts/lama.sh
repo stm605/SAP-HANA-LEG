@@ -7,9 +7,14 @@ vmSize=$6
 
 
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
+#sudo zypper install -y glibc-2.22-51.6
+#sudo zypper install -y systemd-228-142.1
 sudo zypper install -y unrar
+sudo zypper install -y krb5-client samba-winbind
+sudo zypper install sapconf
+sudo tuned-adm profile sap-hana
+sudo systemctl start tuned
+sudo systemctl enable tuned
 sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /tmp/LaMaBits
@@ -84,11 +89,10 @@ rm SIGNATURE.SMF
 
 ./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT_39-20010403.SAR &> /tmp/sapacextinst.txt
 
-./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacosprep_azr.so
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacext_lvm.so
 
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
-echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
+#echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
 /usr/sap/hostctrl/exe/saphostexec -restart
 
 systemctl enable nfsserver
