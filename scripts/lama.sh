@@ -20,6 +20,7 @@ sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir /tmp/LaMaBits
 sudo mkdir /tmp/LaMaBits/hostagent
 sudo mkdir /tmp/LaMaBits/sapaext
+sudo mkdir /sapcds
 
 groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm

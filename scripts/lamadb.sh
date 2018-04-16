@@ -20,7 +20,7 @@ groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
 useradd -g 1001 -u 1001 -s /bin/csh s42adm
 useradd -g 1001 -u 1002 -s /bin/csh s43adm
-useradd -g 1001 -u 1010 -s /bin/csh -m -d /usr/sap/S41/home s41adm
+useradd -g 1001 -u 1010 -s /bin/csh -d /usr/sap/S41/home s41adm
 useradd -g 1001 -u 1005 -s /bin/sh -M s49adm
 useradd -g 1001 -u 1006 -s /bin/sh -M s48adm
 
@@ -56,7 +56,7 @@ echo $Uri >> /tmp/url.txt
 
 cp -f /etc/waagent.conf /etc/waagent.conf.orig
 sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
-sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
+sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=2048/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
@@ -84,12 +84,13 @@ rm SIGNATURE.SMF
 
 ./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT_39-20010403.SAR &> /tmp/sapacextinst.txt
 
-./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacosprep_azr.so
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacext_lvm.so
 
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
-echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
+#echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
 /usr/sap/hostctrl/exe/saphostexec -restart
 
-systemctl enable nfsserver
-systemctl restart nfsserver
+#systemctl enable nfsserver
+#systemctl restart nfsserver
+
+shutdown -r 1
