@@ -73,7 +73,7 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 chmod -R 777 /tmp/LaMaBits
 
-/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT34_34-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
+/tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPHOSTAGENT35_35-20009394.SAR -R /tmp/LaMaBits/hostagent -manifest SIGNATURE.SMF
 /tmp/LaMaBits/SC -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR -R /tmp/LaMaBits/sapaext -manifest SIGNATURE.SMF
 
 cd /tmp/LaMaBits/hostagent
@@ -88,7 +88,6 @@ rm SIGNATURE.SMF
 
 ./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT_39-20010403.SAR &> /tmp/sapacextinst.txt
 
-./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacosprep_azr.so
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_39-20010403.SAR libsapacext_lvm.so
 
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
