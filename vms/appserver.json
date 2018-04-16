@@ -176,7 +176,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[parameters('HANAVHOST')]",
+          "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('vmUserName')]",
           "adminPassword": "[parameters('vmPassword')]"
         },
