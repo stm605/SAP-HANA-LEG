@@ -20,7 +20,7 @@ groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
 useradd -g 1001 -u 1001 -s /bin/csh s42adm
 useradd -g 1001 -u 1002 -s /bin/csh s43adm
-useradd -g 1001 -u 1010 -s /bin/csh -d /usr/sap/S41/home s41adm
+useradd -g 1001 -u 1010 -s /bin/sh -d /usr/sap/S41/home s41adm
 useradd -g 1001 -u 1005 -s /bin/sh -M s49adm
 useradd -g 1001 -u 1006 -s /bin/sh -M s48adm
 
