@@ -39,7 +39,6 @@ mkdir -p /hana/backup/$HANASID
 mkdir -p /usr/sap/$HANASID
 mkdir -p /sapcds
 
-
 groupadd -g 1001 sapsys
 useradd -g 1001 -u 488 -s /bin/false sapadm
 
@@ -63,7 +62,7 @@ echo $Uri >> /tmp/url.txt
 
 cp -f /etc/waagent.conf /etc/waagent.conf.orig
 sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
-sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=229376/g"
+sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=2048/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
@@ -125,75 +124,25 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
 #!/bin/bash
-#echo "mounthanashared start" >> /tmp/parameter.txt
+echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/data$HANASID /hana/shared/$HANASID
 mount -t xfs /dev/sharedvg/log$HANASID /hana/log/$HANASID
 mount -t xfs /dev/sharedvg/sharedlv$HANASID /hana/shared/$HANASID
 mount -t xfs /dev/sharedvg/backup$HANASID /hana/backup/$HANASID
 mount -t xfs /dev/sharedvg/usrsaplv$HANASID /usr/sap/$HANASID
-#echo "mounthanashared end" >> /tmp/parameter.txt
+echo "mounthanashared end" >> /tmp/parameter.txt
 chown $lsidadm:sapsys /hana/shared/$HANASID
 chown $lsidadm:sapsys /hana/backup/$HANASID
 chown $lsidadm:sapsys /usr/sap/$HANASID
 chown $lsidadm:sapsys /hana/data/$HANASID
 chown $lsidadm:sapsys /hana/log/$HANASID
 
-#echo "write to fstab start" >> /tmp/parameter.txt
+echo "write to fstab start" >> /tmp/parameter.txt
 echo "/dev/mapper/hanavg-datalv$HANASID /hana/data/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/hanavg-loglv$HANASID /hana/log/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv$HANASID /hana/shared/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv$HANASID /hana/backup/$HANASID xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv$HANASID /usr/sap/$HANASID xfs defaults 0 0" >> /etc/fstab
-#echo "write to fstab end" >> /tmp/parameter.txt
-
-#if [ ! -d "/hana/data/$HANASID/sapbits" ]
-# then
-# mkdir "/hana/data/$HANASID/sapbits"
-#fi
-
-#!/bin/bash
-#cd /hana/data/$HANASID/sapbits
-#echo "hana download start" >> /tmp/parameter.txt
-#/usr/bin/wget --quiet $Uri/SapBits/md5sums
-#/usr/bin/wget --quiet $Uri/SapBits/51052325_part1.exe
-#/usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
-#/usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
-#/usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
-#/usr/bin/wget --quiet "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/hdbinst.cfg"
-#echo "hana download end" >> /tmp/parameter.txt
-
-#date >> /tmp/testdate
-#cd /hana/data/$HANASID/sapbits
-
-#echo "hana unrar start" >> /tmp/parameter.txt
-#!/bin/bash
-#cd /hana/data/$HANASID/sapbits
-#unrar x 51052325_part1.exe
-#echo "hana unrar end" >> /tmp/parameter.txt
-
-#echo "hana prepare start" >> /tmp/parameter.txt
-#cd /hana/data/$HANASID/sapbits
-
-#!/bin/bash
-#cd /hana/data/$HANASID/sapbits
-#myhost=`hostname`
-#sedcmd="s/REPLACE-WITH-HOSTNAME/$HANAVHOST/g"
-#sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
-#sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
-#sedcmd4="s/AweS0me@PW/$HANAPWD/g"
-#sedcmd5="s/sid=H10/sid=$HANASID/g"
-#sedcmd6="s/number=00/number=$HANANUMBER/g"
-#cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-#cat hdbinst.cfg | sed $sedcmd | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-#echo "hana preapre end" >> /tmp/parameter.txt
-
-#/usr/sap/hostctrl/exe/sapacosprep -a ifup -i "eth0" -h $HANAVHOST -n 255.255.255.0 &> /tmp/sapacosprep.txt
-#/usr/sap/hostctrl/exe/saphostctrl -function ACOSPrepare -op ifup -iface eth0 -vhost $HANAVHOST -nmask 255.255.255.0 &> /tmp/sapacosprep.txt
-
-#!/bin/bash
-#echo "install hana start" >> /tmp/parameter.txt
-#cd /hana/data/$HANASID/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-#/hana/data/$HANASID/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/$HANASID/sapbits/hdbinst-local.cfg --component_medium=/hana/data/$HANASID/sapbits/51052325
-#echo "install hana end" >> /tmp/parameter.txt
+echo "write to fstab end" >> /tmp/parameter.txt
 
 shutdown -r 1
