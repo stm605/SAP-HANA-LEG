@@ -83,7 +83,7 @@ rm SIGNATURE.SMF
 
 ./sapacosprep -a InstallAcExt -m /tmp/LaMaBits/SAPACEXT_41-20010403.SAR &> /tmp/sapacextinst.txt
 
-#./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_41-20010403.SAR libsapacext_lvm.so
+./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_41-20010403.SAR libsapacext_lvm.so
 
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
 #echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
