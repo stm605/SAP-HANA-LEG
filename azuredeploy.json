@@ -175,6 +175,8 @@
       },
       "defaultValue": "Standard_GS5 (448 GB, Certified)",
       "allowedValues": [
+        "Standard_E8s_v3  ( 64 GB - DBServer)",
+        "Standard_E16s_v3 (128 GB - DBServer)",
         "Standard_GS5     (448 GB - DBServer)",
         "Standard_M64s    (1 TB   - DBServer)",
         "Standard_M64ms   (1.7 TB - DBServer)",
@@ -294,7 +296,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
       ],
-      "condition": "[equals(variables('vmSize'),'Standard_GS5')]"
+      "condition": "[or(or(equals(parameters('VMSize'),'Standard_GS5     (448 GB - DBServer)'), equals(parameters('VMSize'),'Standard_E8s_v3  ( 64 GB - DBServer)')), equals(parameters('VMSize'),'Standard_E16s_v3 (128 GB - DBServer)'))]"
     },
     {
 
@@ -535,7 +537,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
       ],      
-      "condition": "[or(equals(variables('vmSize'),'Standard_E16s_v3'), or(equals(variables('vmSize'),'Standard_E32s_v3'), equals(variables('vmSize'),'Standard_E64s_v3')))]"
+      "condition": "[or(equals(parameters('VMSize'),'Standard_E16s_v3 (128 GB - AppServer)'), or(equals(parameters('VMSize'),'Standard_E32s_v3 (256 GB - AppServer)'), equals(parameters('VMSize'),'Standard_E64s_v3 (448 GB - AppServer)')))]"
     },
     {
       "condition": "[equals(parameters('HanaJumpbox'),'yes')]",
