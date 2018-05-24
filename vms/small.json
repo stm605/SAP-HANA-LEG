@@ -143,8 +143,8 @@
             "shared": 511,
             "sap": 63,
             "backup": 1023,
-            "data1": 511,
-            "data2": 511
+            "data1": 1023,
+            "data2": 1023
         }
       },
   "resources": [
