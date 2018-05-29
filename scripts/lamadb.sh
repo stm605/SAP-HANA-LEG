@@ -85,7 +85,21 @@ rm SIGNATURE.SMF
 
 ./SAPCAR -xvf /tmp/LaMaBits/SAPACEXT_41-20010403.SAR libsapacext_lvm.so
 
+echo "net.core.somaxconn = 4096" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_max_syn_backlog = 8192" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_rmem = 4096        87380   12582912" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_syn_retries = 8" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_timestamps = 1" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_tw_recycle = 1" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_tw_reuse = 1" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_wmem = 4096        16384   8388608" >> /etc/sysctl.conf
+
+echo "cpupower frequency-set -g performance" >> /etc/init.d/boot.local
+echo "cpupower set -b 0" >> /etc/init.d/boot.local
+echo "echo 0 > /sys/kernel/mm/ksm/run" >> /etc/init.d/boot.local
+
 echo "acosprep/sapifconfig = 1" >> /usr/sap/hostctrl/exe/host_profile
+echo "reserved_port/product_list = HANA,HANAREP" >> /usr/sap/hostctrl/exe/host_profile
 #echo "acosprep/nfs_paths = /usr/sap/trans,/home/s41adm,/sapmnt/S41,/usr/sap/S41" >> /usr/sap/hostctrl/exe/host_profile
 /usr/sap/hostctrl/exe/saphostexec -restart
 
