@@ -127,6 +127,7 @@
     }
   },
   "variables": {
+    "storageAccountName": "smvmdiagnostics",
     "api-version": "2017-06-01",
     "api-version-vm": "2017-03-30",
     "vmPassword": "HANA07061992!",
@@ -220,42 +221,46 @@
             "createOption": "FromImage"
           }
         },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-            }
-          ]
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-      ]
-      ,
-      "resources": [
-        {
-          "type": "extensions",
-          "name": "scriptextension",
-          "apiVersion": "[variables('api-version-vm')]",
-          "location": "[resourceGroup().location]",
-          "properties": {
-            "publisher": "Microsoft.Azure.Extensions",
-            "type": "CustomScript",
-            "typeHandlerVersion": "2.0",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/scripts/lamadb.sh"
-              ],
-              "commandToExecute": "[concat('sh lamadb.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'))]"
-            }
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), variables('apiVersion')).primaryEndpoints.blob)]"
           },
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-          ]
-        }
-      ]
-    }
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+              }
+            ]
+          }
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+        ],
+        "resources": [
+          {
+            "type": "extensions",
+            "name": "scriptextension",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+              "publisher": "Microsoft.Azure.Extensions",
+              "type": "CustomScript",
+              "typeHandlerVersion": "2.0",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                "fileUris": [
+                  "https://raw.githubusercontent.com/stm605/SAP-HANA-LEG/master/scripts/lamadb.sh"
+                ],
+                "commandToExecute": "[concat('sh lamadb.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'))]"
+              }
+            },
+            "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+            ]
+          }
+        ]
+      }
   ],
   "outputs": {
 
